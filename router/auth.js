@@ -46,8 +46,10 @@ router.post("/login", async (req, res) => {
   try {
     let token;
     const { email, password } = req.body;
+    console.log(req.body)
+
     if (!email || !password) {
-      return res.status(402).json({ error: "Plz fill all data" });
+      return res.status(401).json({ error: "Plz fill all data" });
     }
 
     const userLogin = await User.findOne({ email: email });
@@ -60,29 +62,54 @@ router.post("/login", async (req, res) => {
 
       res.cookie("jwtoken", token, {
         expires: new Date(Date.now() + 25892000000), //30 days
-        // httpOnly: true,
+         httpOnly: true,
+         secure:true
       });
-     
+      // localStorage.setItem("jwtoken",token);
 
       if (!inMatch) {
-        return res.status(404).send("invalid credentials");
+        return res.status(401).send("invalid credentials");
       } else {
-        res.status(201).json({ message: "user is logged in" });
+
+        const userToken={
+          userToken:token
+        }
+        res.status(200).json(userToken);
       }
     } else {
-      console.log("caught in auth.js");
-      return res.status(404).send("invalid credentials");
+      console.log("caught in login.js");
+      return res.status(401).send("invalid credentials");
     }
   } catch (err) {
     return res.status(404).send(err);
   }
 });
 
-router.get("/about", Authenticate, (req, res) => {
-  // console.log("hello my about");
-  console.log(req.rootUser.name);
-  console.log(req.rootUser.email);
-  res.send(req.rootUser);
+router.get("/verify", Authenticate, (req, res) => {
+
+
+  const {name,email,phone,role,...data}=req.rootUser
+  if(role==="admin"){
+
+    res.status(200).send({name,email,phone,role});
+  }else{
+    res.status(200).send({name,email,phone});
+
+  }
+});
+
+
+router.get("/isadmin", Authenticate, (req, res) => {
+
+
+  const {name,email,phone,role,...data}=req.rootUser
+  if(role==="admin"){
+
+    res.status(200).send({name,email,phone,role});
+  }else{
+    res.status(404).send("You Dont Hvae the clearnce");
+
+  }
 });
 
 router.post("/delete", async (req, res) => {
@@ -98,9 +125,11 @@ router.post("/delete", async (req, res) => {
   }
 });
 
-router.patch("/about", async (req, res) => {
+router.patch("/about", Authenticate, async (req, res) => {
   try {
-    const did = await User.findByIdAndUpdate({ _id: req.body._id }, req.body, {
+  const {_id,...data}=req.rootUser
+
+    const did = await User.findByIdAndUpdate({ _id: _id }, req.body, {
       new: true,
     });
     res.status(200).send(did);
@@ -110,43 +139,31 @@ router.patch("/about", async (req, res) => {
   }
 });
 
-router.get("/appoint", async (req, res) => {
+//get all users
+router.get("/allusers",Authenticate, async (req, res) => {
   try {
-    const did = await User.find();
+    const data = await User.find();
 
-    res.status(200).send(did);
+
+    const {name,email,phone,role,...other}=req.rootUser
+    if(role==="admin"){
+  
+      res.status(200).send(data);
+    }else{
+      res.status(404).send("You dont have access");
+  
+    }
+
+
+
+
   } catch (e) {
     console.log(e);
-    res.status(409).send(e);
+    res.status(404).send(e);
   }
 });
-router.post("/appoint", async (req, res) => {
-  try {
-    const { userid, start, end, name, email } = req.body;
-    const tmain = new Mainaa({ userid, start, end, name, email });
 
-    // const itExist = await Mainaa.find({start:{$lte:start,}});
-    if (end <= start) {
-      res.status(505).json({ Failed });
-    }
-    const itExist = await Mainaa.find({
-      $or: [
-        { start: { $gte: start, $lte: end } },
-        { end: { $gte: start, $lte: end } },
-      ],
-    });
-    try {
-      const a = itExist[0].userid;
-      res.status(505).json({ itExist });
-    } catch (e) {
-      await tmain.save();
-      res.status(200).json({ message: "Saved Successfully" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(409).send(e);
-  }
-});
+
 
 router.delete("/scam/:id", async (req, res) => {
   try {
@@ -164,6 +181,8 @@ router.delete("/scam/:id", async (req, res) => {
   }
 });
 
+
+
 router.post("/find", async (req, res) => {
   try {
     const foundit = await User.findOne({ _id: req.body._id });
@@ -173,22 +192,7 @@ router.post("/find", async (req, res) => {
     res.status(404).json({ message: "not found" });
   }
 });
-router.get("/time", async (req, res) => {
-  try {
-    const time = await Mainaa.find(req.query);
-    res.status(200).json(time);
-  } catch (e) {
-    console.log(e);
-    res.status(404).json({ message: "not found" });
-  }
-});
-router.get("/appointment", async (req, res) => {
-  try {
-  } catch (e) {
-    console.log(e);
-    res.status(404).json({ message: "not found" });
-  }
-});
+
 
 router.get("/logout", async (req, res) => {
   res.clearCookie("jwtoken", { path: "/" });
@@ -196,5 +200,4 @@ router.get("/logout", async (req, res) => {
 });
 
 
-router.get("/rooms")
 module.exports = router;

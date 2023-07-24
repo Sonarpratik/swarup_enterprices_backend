@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 8000;
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -47,6 +47,7 @@ app.use(express.json());
 
 //We connect to the router to free the space in app js
 app.use(require('./router/auth'))
+app.use(require('./router/invoice'))
 // require('./router/auth')
 
 
@@ -55,7 +56,7 @@ app.get("/contact", (req, res) => {
   res.send("hello contact");
 });
 app.get("*", (req, res) => {
-  res.send("hello hahaha ur wrong");
+  res.status(404).send("hello hahaha ur wrong");
 });
 
 app.listen(port, () => {

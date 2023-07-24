@@ -7,10 +7,17 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   phone: { type: Number, required: true },
-  // prn_no: { type: String, required: true },
   password: { type: String, required: true },
-  cpassword: { type: String, required: true },
+
   role:{type:String,default:"client"},
+  invoice_create:{type:Boolean,default:true},
+  invoice_edit:{type:Boolean,default:true},
+  invoice_delete:{type:Boolean,default:true},
+  invoice_view:{type:Boolean,default:true},
+  client_create:{type:Boolean,default:true},
+  client_edit:{type:Boolean,default:true},
+  client_delete:{type:Boolean,default:true},
+  client_view:{type:Boolean,default:true},
   tokens: [
     {
       token: {
@@ -24,9 +31,11 @@ const userSchema = new mongoose.Schema({
 //we are hashing the password
 userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
-    // console.log("hi i am insdie")
+    console.log("hi i am insdie")
+
     this.password = await bcrypt.hash(this.password, 12);
-    this.cpassword = await bcrypt.hash(this.cpassword, 12);
+    // this.cpassword = await bcrypt.hash(this.cpassword, 12);
+
   }
   next();
 });

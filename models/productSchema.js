@@ -1,0 +1,46 @@
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+
+const productSchema = new mongoose.Schema({
+  product_name: { type: String, required: true },
+  product_sku: { type: String, required: true },
+  product_img: { type: String, required: true },
+  product_shipping_details: { type: String, required: true },
+  product_description: { type: String },
+  product_size: [{ type: String }],
+  product_img: { type: String },
+  product_highlight:[
+    {
+      title:{
+        type: String,
+      },
+      desc:
+       { type: String}
+    }
+  ],
+  product_color:[{type: String}],
+  product_occasion:{type: String},
+  product_type:{type: String},
+  product_Fabric:{type: String},
+  product_Work:{type: String},
+  product_country_of_origin:{type: String},
+  wash_care:[
+    {
+      instructions:{
+        type: String,
+      }
+     
+    }
+  ],
+  product_discount:{type: String},
+  product_price:{type: String}
+
+
+
+});
+
+
+const Product = mongoose.model("PRODUCT", productSchema);
+module.exports = Product;

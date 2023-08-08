@@ -3,13 +3,17 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 
-const userSchema = new mongoose.Schema({
+const adminSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   phone: { type: Number, required: true },
-  address: { type: String, required: true },
-  address_shipping_address: { type: String },
   password: { type: String, required: true },
+
+  role:{type:String,default:"staff"},//staff and admin /user==customer
+  saree_create:{type:Boolean,default:false},
+  saree_edit:{type:Boolean,default:false},
+  saree_delete:{type:Boolean,default:false},
+  saree_view:{type:Boolean,default:false},
   tokens: [
     {
       token: {
@@ -25,7 +29,7 @@ const userSchema = new mongoose.Schema({
 });
 
 //we are hashing the password
-userSchema.pre("save", async function (next) {
+adminSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     console.log("hi i am insdie")
 
@@ -36,7 +40,8 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+//We are generating 
+// module.exports = mongoose.model("Main", userSchema);
 
-
-const User = mongoose.model("USER", userSchema);
-module.exports = User;
+const Admin = mongoose.model("ADMIN", adminSchema);
+module.exports = Admin;

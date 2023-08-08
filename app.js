@@ -47,7 +47,8 @@ app.use(express.json());
 
 //We connect to the router to free the space in app js
 app.use(require('./router/auth'))
-app.use(require('./router/invoice'))
+app.use(require('./router/product'))
+app.use(require('./router/cart'))
 // require('./router/auth')
 
 

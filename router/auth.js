@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const dotenv = require('dotenv')
+dotenv.config()
+const {OAuth2Client}=require('google-auth-library')
 
 const User = require("../models/userSchema");
 const Admin = require("../models/adminSchema");
@@ -14,6 +17,25 @@ const {
 router.get("/", (req, res) => {
   res.send("hello world in auth");
 });
+
+router.post('/',async (req,res,next)=>{
+// res.header('Access-Contorl-Allow-Origin')
+res.header('Referrer-Policy','no-referrer-when-downgrade')
+
+const redirectUrl='http://localhost:8000/oauth'
+const oAuth2Client=new OAuth2Client(
+  process.env.CLIENT_ID,
+  process.env.SECRET_AUTH_KEY,
+  redirectUrl
+)
+const authoriseUrl = oAuth2Client.generateAuthUrl({
+  access_type: 'offline',
+  scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid',
+  prompt: 'consent'
+});
+res.json({url:authoriseUrl})
+
+})
 
 //User Register
 router.post("/auth/register", async (req, res) => {
@@ -289,3 +311,9 @@ router.get("/auth/user", IsAdmin, async (req, res) => {
 });
 
 module.exports = router;
+
+
+
+
+
+

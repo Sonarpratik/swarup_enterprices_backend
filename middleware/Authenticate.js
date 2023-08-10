@@ -28,6 +28,8 @@ const {verfiyToken,token}= VerifyToken(req);
       "tokens.token": token,
     });
 
+
+
     if (!rootUser) {
       throw new Error("User not found");
     }
@@ -75,12 +77,12 @@ const IsAdmin = async (req, res, next) => {
     res.status(401).send("Admin Unauthorized");
   }
 };
-
+//is admin create
 const IsAdmin_Product_Create = async (req, res, next) => {
   try {
     const {verfiyToken,token}= VerifyToken(req);
 
-    const rootUser = await User.findOne({
+    const rootUser = await Admin.findOne({
       _id: verfiyToken.userId,
       "tokens.token": token,
     });
@@ -110,7 +112,42 @@ const IsAdmin_Product_Create = async (req, res, next) => {
     res.status(401).send("Admin Unauthorized");
   }
 };
+//is admin update
 
+const IsAdmin_Product_Update = async (req, res, next) => {
+  try {
+    const {verfiyToken,token}= VerifyToken(req);
+
+    const rootUser = await Admin.findOne({
+      _id: verfiyToken.userId,
+      "tokens.token": token,
+    });
+
+    if (!rootUser) {
+      throw new Error("User not found");
+    }
+   
+    req.token = token;
+    req.rootUser = rootUser;
+
+    const { name, email, phone, role, saree_create, ...data } = rootUser;
+
+    if (role === "admin") {
+      //   res.status(200).send({name, email, phone, role});
+
+      next();
+    } else {
+      if (saree_update === true) {
+        next();
+      } else {
+        res.status(401).send("Unauthorized");
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(401).send("Admin Unauthorized");
+  }
+};
 //admin and its user
 const IsAdminAndUser = async (req, res, next) => {
   try {
@@ -140,11 +177,6 @@ const IsAdminAndUser = async (req, res, next) => {
         throw new Error("User not found");
 
       }
-
-
-
-
-
     } else {
       req.token = token;
       const { _id, ...data } = rootUser;
@@ -167,4 +199,5 @@ module.exports = {
   IsAdmin,
   IsAdminAndUser,
   IsAdmin_Product_Create,
+  IsAdmin_Product_Update,
 };

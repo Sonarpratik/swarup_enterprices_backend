@@ -46,6 +46,10 @@ require('./db/conn')
 app.use(express.json());
 
 //We connect to the router to free the space in app js
+var authRouter=require('./router/passport/oauth')
+// var requestRoute=require('./router/auth')
+app.use('/oauth',authRouter)
+app.use(require('./router/auth'))
 app.use(require('./router/auth'))
 app.use(require('./router/product'))
 app.use(require('./router/cart'))

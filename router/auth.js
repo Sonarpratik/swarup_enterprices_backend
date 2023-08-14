@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require('dotenv')
+const jst_decode=require('jwt-decode')
 dotenv.config()
 const {OAuth2Client}=require('google-auth-library')
 
@@ -131,6 +132,86 @@ router.post("/auth/login", async (req, res) => {
     return res.status(404).send(err);
   }
 });
+router.post("/auth/google/login", async (req, res) => {
+  try {
+    let token;
+    const { Gtoken } = req.body;
+    console.log(req.body);
+    if(!Gtoken){
+      res.status(404).send("Token Error")
+    }
+    const userobj=jst_decode(Gtoken)
+    if(!userobj){
+      res.status(404).send("Token Error")
+    }
+
+  
+
+    const userLogin = await User.findOne({ email: userobj.email });
+    if (userLogin) {
+      //if it is match then it stores inside the inMatch
+      // const inMatch = await bcrypt.compare(password, userLogin.password);
+      const tokenExpiration = 100000 * 60 ; // 10 minutes in seconds
+      token = jwt.sign({ userId: userLogin._id }, "your_secret_key", {
+        expiresIn: tokenExpiration,
+      });
+      res.cookie("jwtoken", token, {
+        expires: new Date(Date.now() + tokenExpiration*1000), // Set cookie expiration
+        httpOnly: true,
+        secure: true,
+      });
+
+      const tokenExpirationDateTime = new Date(Date.now() + tokenExpiration*1000);
+      // console.log(tokenExpirationDateTime)
+      userLogin.tokens.push({ token, expiresAt: tokenExpirationDateTime });
+      await userLogin.save();
+    
+        const userToken = {
+          userToken: token,
+        };
+        console.log("LOGIN")
+        res.status(200).json(userToken);
+      
+    } else {
+
+                const user = new User({name:userobj.name,email:userobj.email,user_id:userobj.sub});
+            await user.save();
+            const userLogin = await User.findOne({
+                email: userobj.email,
+                user_id: userobj.sub,
+              });
+            if(userLogin){
+                const tokenExpiration = 100000 * 60 ; // 10 minutes in seconds
+                token = jwt.sign({ userId: userLogin._id }, "your_secret_key", {
+                  expiresIn: tokenExpiration,
+                });
+                res.cookie("jwtoken", token, {
+                  expires: new Date(Date.now() + tokenExpiration*1000), // Set cookie expiration
+                  httpOnly: true,
+                  secure: true,
+                });
+          
+                const tokenExpirationDateTime = new Date(Date.now() + tokenExpiration*1000);
+                console.log(tokenExpirationDateTime)
+                userLogin.tokens.push({ token, expiresAt: tokenExpirationDateTime });
+                await userLogin.save();
+            }  
+
+
+
+            const userToken = {
+                userToken: token,
+              };
+              console.log("CRETAED")
+              res.status(200).json(userToken);
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(404).send(err);
+  }
+});
+
+
 
 //Login Admin
 router.post("/auth/admin/login", async (req, res) => {

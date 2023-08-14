@@ -96,9 +96,7 @@ router.get("/", async (req, res) => {
                 userToken: token,
               };
               console.log("Login")
-
               res.status(200).json(userToken);
-            //   res.send("User Login.");
           }else{
 
           

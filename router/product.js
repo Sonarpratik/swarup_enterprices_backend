@@ -19,7 +19,7 @@ const {
 
 
 router.post("/api/product", IsAdmin_Product_Create,async (req, res) => {
-    try {  
+    try {
       const product = new Product(req.body);
     
     
@@ -46,14 +46,41 @@ router.patch("/api/product/:id", IsAdmin_Product_Update,async (req, res) => {
     }
   });
 
-
+//Get All Products
 router.get("/api/product",async (req, res) => {
     try {  
-        const product = await Product.find();
 
+
+
+
+
+
+
+
+const {page,limit,product_name,...resa}=req.query
+if(product_name){
+  resa.product_name={$regex:product_name}
+}
+      // const page = req.query.page;
+      // const limit = req.query.limit;
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+      const totalCount = await Product.countDocuments(resa);
+  
+      // Fetch data with pagination using skip() and limit()
+      const data = await Product.find(resa).skip(startIndex).limit(limit);
+      // Calculate total pages for pagination
+      const totalPages = Math.ceil(totalCount / limit);
+        // const product = await Product.find();
+
+        const response = {
+          currentPage: page,
+          totalPages: totalPages,
+          totalItems: totalCount,
+          data: data,
+        };
     
-    
-      res.status(200).json(product);
+      res.status(200).json(response);
     } catch (err) {
       console.log(err);
     }

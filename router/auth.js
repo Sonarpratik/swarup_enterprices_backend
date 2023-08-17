@@ -41,9 +41,9 @@ res.json({url:authoriseUrl})
 //User Register
 router.post("/auth/register", async (req, res) => {
   try {
-    const { name, email, phone, password, address } = req.body;
+    const { name, email,  password } = req.body;
     const { cpassword, ...data } = req.body;
-    if (!name || !email || !phone || !password || !cpassword || !address) {
+    if (!name || !email  || !password || !cpassword ) {
       return res.status(500).json({ error: "Fill all data" });
     }
     const userExist = await User.findOne({ email: req.body.email });

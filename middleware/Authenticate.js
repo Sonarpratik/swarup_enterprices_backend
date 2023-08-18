@@ -190,7 +190,7 @@ const IsAdminAndUser = async (req, res, next) => {
     }
   } catch (err) {
     console.log(err);
-    res.status(401).send("Big Unauthorized");
+    res.status(401).json({"error":"Wrong Token"});
   }
 };
 

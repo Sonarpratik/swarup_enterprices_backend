@@ -23,6 +23,7 @@ console.log()
   if (!User) {
     // throw new Error('User not found');
     const product = new Cart(req.body);
+    console.log("new cart")
     await product.save();
     res.status(201).send(req.body);
 
@@ -31,7 +32,8 @@ console.log()
     const did = await Cart.findByIdAndUpdate({ _id: User._id }, req.body, {
         new: true,
       });
-      console.log("did",did)
+      console.log("update cart")
+
     res.status(200).send(did);
 
   }
@@ -53,10 +55,12 @@ console.log()
  
         const cart = await Cart.findOne({user_id: userId});
 if(!cart){
-    res.status(401).send("no data");
+    res.status(200).send("no data");
 
+}else{
+
+  res.status(200).send(cart);
 }
-    res.status(200).send(cart);
         
     
     } catch (err) {

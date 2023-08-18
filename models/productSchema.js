@@ -34,8 +34,8 @@ const productSchema = new mongoose.Schema({
      
     }
   ],
-  product_discount:{type: String},
-  product_price:{type: String}
+  product_discount:{type: Number},
+  product_price:{type: Number}
 
 
 

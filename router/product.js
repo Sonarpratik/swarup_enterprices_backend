@@ -39,9 +39,11 @@ router.patch("/api/product/:id", IsAdmin_Product_Update,async (req, res) => {
       });
       res.status(200).send(did);
     
-    await product.save();
-      res.status(201).json(req.body);
+    // await product.save();
+      // res.status(201).json(req.body);
     } catch (err) {
+      res.status(404).json(req.body);
+
       console.log(err);
     }
   });
@@ -97,6 +99,8 @@ router.get("/api/product/:id",async (req, res) => {
     
       res.status(200).json(product);
     } catch (err) {
+      res.status(404).json({"data":"product not found"});
+
       console.log(err);
     }
   });

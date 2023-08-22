@@ -6,7 +6,7 @@ const userCartSchema = new mongoose.Schema({
   user_id: { type: String, required: true },
   products: [
     { 
-      product_id:{ type: String, required: true },
+      product_id:{ type: String },
       product_name: { type: String, required: true },
       product_sku: { type: String, required: true },
       product_img: { type: String, required: true },
@@ -35,8 +35,8 @@ const userCartSchema = new mongoose.Schema({
           }
         }
       ],
-      product_discount: { type: String },
-      product_price: { type: String }
+      product_discount: { type: Number },
+      product_price: { type: Number }
     }
   ]
 });

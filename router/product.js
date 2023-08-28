@@ -23,8 +23,8 @@ router.post("/api/product", IsAdmin_Product_Create,async (req, res) => {
       const product = new Product(req.body);
     
     
-    await product.save();
-      res.status(201).json(req.body);
+    const created=await product.save();
+      res.status(201).json(created);
     } catch (err) {
       console.log(err);
     }
@@ -59,16 +59,34 @@ router.get("/api/product",async (req, res) => {
 
 
 
-const {page,limit,product_name,...resa}=req.query
+const {page,limit,product_name,product_size,...resa}=req.query
 if(product_name){
   resa.product_name={$regex:product_name}
+
 }
+
+if(product_size){
+
+  try{
+  const product_sizeString = product_size.join(',');
+  if(product_size){
+    
+    const sizes = product_sizeString.split(',');
+    resa.product_size={ $in: sizes }
+  }
+}catch(e){
+  resa.product_size=product_size
+}
+}
+console.log(resa)
+// Convert the product_size query parameter into an array
       // const page = req.query.page;
       // const limit = req.query.limit;
       const startIndex = (page - 1) * limit;
       const endIndex = page * limit;
       const totalCount = await Product.countDocuments(resa);
-  
+      // const sortedProductSizes = resa.product_size.slice().sort();
+  // console.log(sortedProductSizes)
       // Fetch data with pagination using skip() and limit()
       const data = await Product.find(resa).skip(startIndex).limit(limit);
       // Calculate total pages for pagination

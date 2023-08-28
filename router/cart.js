@@ -10,6 +10,7 @@ const {
   IsAdminAndUser,
 } = require("../middleware/authenticate.js");
 const wishlist = require("../models/wishlistSchema");
+const Product = require("../models/productSchema");
 
 router.post("/api/cart", Authenticate, async (req, res) => {
   try {
@@ -23,10 +24,8 @@ router.post("/api/cart", Authenticate, async (req, res) => {
 
     const { _id } = req.rootUser;
     const User = await Cart.findOne({ user_id: _id });
-    console.log();
     if (!User) {
       // throw new Error('User not found');
-      console.log(_id);
       const structure = {
         user_id: _id,
         products: [new_updatedObject],
@@ -37,13 +36,26 @@ router.post("/api/cart", Authenticate, async (req, res) => {
       await product.save();
       res.status(201).send(structure);
     } else {
-      console.log(User);
 
-      User?.products.push(new_updatedObject);
-      console.log("update cart");
-      const did = await User.save();
-      res.status(200).send(did);
-    }
+      const check=User.products.find((item)=>item.product_id===new_updatedObject.product_id)
+if(!check){
+
+
+  console.log("hello",check)
+
+  User?.products.push(new_updatedObject);
+  console.log("update cart");
+  const did = await User.save();
+  res.status(200).send(did);
+
+}else{
+
+  console.log("hello",check)
+  console.log("hello",new_updatedObject.product_id)
+
+  res.status(200).send(User);
+}
+}
   } catch (err) {
     console.log(err);
     res.status(400).send("Cart Not Created");
@@ -62,7 +74,7 @@ router.post("/api/remove/cart", Authenticate, async (req, res) => {
       console.log(User);
 
       User.products = User.products.filter(product => {
-        const productId = product._id.toString();
+        const productId = product.product_id.toString();
         return productId !== req.body._id;
       });
 
@@ -101,16 +113,29 @@ await User.save();
 
 
 
-
+//GET CART BY USER ID AND ADMIN OR USER TOKEN
 router.get("/api/cart/:id", IsAdminAndUser, async (req, res) => {
   try {
     const userId = req.params.id;
 
     const cart = await Cart.findOne({ user_id: userId });
+    
+
     if (!cart) {
       res.status(200).send("no data");
     } else {
-      res.status(200).send(cart);
+      const productIds = cart?.products?.map((item) => item.product_id);
+const productx=await Product.find({_id:{ $in: productIds } })
+console.log("prod",productx)
+
+const new_cart={
+  _id:cart._id,
+  user_id:cart.user_id,
+  products:productx
+}
+new_cart.products=productx
+console.log(new_cart)
+      res.status(200).send(new_cart);
     }
   } catch (err) {
     console.log(err);

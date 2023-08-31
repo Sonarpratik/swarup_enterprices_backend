@@ -13,6 +13,9 @@ const {
   Authenticate,
   IsAdmin,
   IsAdminAndUser,
+  IsAdminAndStaff,
+  IsSuper,
+
 } = require("../middleware/authenticate.js");
 
 router.get("/", (req, res) => {
@@ -63,7 +66,7 @@ router.post("/auth/register", async (req, res) => {
 });
 
 //Admin Register
-router.post("/auth/admin/register", async (req, res) => {
+router.post("/auth/admin/register",IsSuper, async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
     const { cpassword, ...data } = req.body;
@@ -76,7 +79,6 @@ router.post("/auth/admin/register", async (req, res) => {
     } else if (password !== cpassword) {
       return res.status(500).json({ error: "Passwords are different" });
     }
-    console.log(data);
 
     const user = new Admin(data);
 
@@ -92,7 +94,6 @@ router.post("/auth/login", async (req, res) => {
   try {
     let token;
     const { email, password } = req.body;
-    console.log(req.body);
 
     if (!email || !password) {
       return res.status(401).json({ error: "Plz fill all data" });
@@ -114,7 +115,7 @@ router.post("/auth/login", async (req, res) => {
 
       const tokenExpirationDateTime = new Date(Date.now() + tokenExpiration*1000);
       console.log(tokenExpirationDateTime)
-      userLogin.tokens.push({ token, expiresAt: tokenExpirationDateTime });
+      userLogin.tokens[0]=({ token, expiresAt: tokenExpirationDateTime });
       await userLogin.save();
       if (!inMatch) {
         return res.status(401).send("invalid credentials");
@@ -136,7 +137,6 @@ router.post("/auth/google/login", async (req, res) => {
   try {
     let token;
     const { Gtoken } = req.body;
-    console.log(req.body);
     if(!Gtoken){
       res.status(404).send("Token Error")
     }
@@ -218,7 +218,6 @@ router.post("/auth/admin/login", async (req, res) => {
   try {
     let token;
     const { email, password } = req.body;
-    console.log(req.body);
 
     if (!email || !password) {
       return res.status(401).json({ error: "Plz fill all data" });
@@ -333,25 +332,19 @@ router.post("/delete", async (req, res) => {
   }
 });
 
-//get all users
-router.get("/auth/user", IsAdmin, async (req, res) => {
+//get all staff
+router.get("/auth/staff", IsAdmin, async (req, res) => {
   try {
-    const page = req.query.page;
-    const limit = req.query.limit;
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    const totalCount = await User.countDocuments();
-
-    // Fetch data with pagination using skip() and limit()
-    const data = await User.find().skip(startIndex).limit(limit);
+    
+    const data = await Admin.find();
 
     // Calculate total pages for pagination
-    const totalPages = Math.ceil(totalCount / limit);
+ 
 
     // Response object to include pagination info
 
     // const data = await User.find();
-
+console.log(data)
     const newArray = data.map(
       ({
         _id,
@@ -375,6 +368,118 @@ router.get("/auth/user", IsAdmin, async (req, res) => {
         saree_edit,
         saree_delete,
         saree_view,
+      })
+    );
+  
+
+    res.status(200).send(newArray);
+  } catch (e) {
+    console.log(e);
+    res.status(404).send(e);
+  }
+});
+//Get Staff By admin ANd Own User
+router.get("/auth/staff/:id",IsAdminAndStaff, async (req, res) => {
+  try {
+    const Id = req.params.id;
+    const data = await Admin.findById(Id);
+const {
+  _id,
+  name,
+  email,
+  phone,
+  role,
+  saree_create,
+  saree_edit,
+  saree_delete,
+  saree_view,
+
+  ...rest
+}=data
+  
+    const newArray = {
+      _id,
+      name,
+      email,
+      phone,
+      role,
+      saree_create,
+      saree_edit,
+      saree_delete,
+      saree_view,
+    
+    }
+    res.status(200).send(newArray);
+  } catch (e) {
+    console.log(e);
+    res.status(404).send(e);
+  }
+});
+//Delete staff
+router.delete("/auth/staff/:id",IsSuper, async (req, res) => {
+  try {
+    const Id = req.params.id;
+    const data = await Admin.findByIdAndDelete(Id);
+
+
+    res.status(200).send(data);
+  } catch (e) {
+    console.log(e);
+    res.status(404).send(e);
+  }
+});
+router.patch("/auth/staff/:id", IsSuper, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { password, tokens, _id, ...data } = req.body;
+    console.log(req.body);
+    const did = await Admin.findByIdAndUpdate({ _id: userId }, data, {
+      new: true,
+    });
+
+    const {name,email,phone,role,saree_create,saree_edit,saree_delete,saree_view,...p}=did
+    res.status(200).send({_id,name,email,phone,role,saree_create,saree_edit,saree_delete,saree_view});
+  } catch (e) {
+    console.log(e);
+    res.status(404).send("You Dont Hvae the clearnce");
+  }
+});
+//get all user
+router.get("/auth/user", IsAdmin, async (req, res) => {
+  try {
+    const page = req.query.page;
+    const limit = req.query.limit;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const totalCount = await User.countDocuments();
+
+    // Fetch data with pagination using skip() and limit()
+    const data = await User.find().skip(startIndex).limit(limit);
+
+    // Calculate total pages for pagination
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Response object to include pagination info
+
+    // const data = await User.find();
+    const newArray = data.map(
+      ({
+        _id,
+        name,
+        email,
+        phone,
+        billing_address,
+        shipping_address,
+       
+
+        ...rest
+      }) => ({
+        _id,
+        name,
+        email,
+        phone,
+        billing_address,
+        shipping_address,
       })
     );
     const response = {

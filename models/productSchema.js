@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+const dummy_pic="https://imgs.search.brave.com/neBrELOnsfK49yJraJ6s05kKhr38cFT0UIFls9VbHr4/rs:fit:860:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzAzLzM0LzgzLzIy/LzM2MF9GXzMzNDgz/MjI1NV9JTXh2ellS/eWdqZDIwVmxTYUlB/RlpyUVdqb3pRSDZC/US5qcGc"
 
 const productSchema = new mongoose.Schema({
   product_name: { type: String, required: true },
@@ -11,7 +11,7 @@ const productSchema = new mongoose.Schema({
   product_description: { type: String },
 //not array
   product_size: { type: String },
-  product_img: { type: String },
+  product_img: { type: String,default:dummy_pic },
 
   product_highlight:[
     {

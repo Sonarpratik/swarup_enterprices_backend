@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   billing_address: { type: String },
   shipping_address: { type: String },
   password: { type: String },
+  active:{type:Boolean,default:true},
   tokens: [
     {
       token: {

@@ -14,6 +14,9 @@ const adminSchema = new mongoose.Schema({
   saree_edit:{type:Boolean,default:false},
   saree_delete:{type:Boolean,default:false},
   saree_view:{type:Boolean,default:false},
+  user_view:{type:Boolean,default:false},
+  user_edit:{type:Boolean,default:false},
+  user_delete:{type:Boolean,default:false},
   tokens: [
     {
       token: {

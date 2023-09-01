@@ -15,6 +15,8 @@ const {
   IsAdminAndUser,
   IsAdminAndStaff,
   IsSuper,
+  IsAdmin_Product_Delete,
+  IsAdminAndUserAnd_staff_patch_true,
 
 } = require("../middleware/authenticate.js");
 
@@ -295,7 +297,7 @@ router.get("/auth/verify/admin", IsAdmin, (req, res) => {
 });
 
 //Only Admin Can Update
-router.patch("/auth/user/:id", IsAdmin, async (req, res) => {
+router.patch("/auth/user/:id", IsAdminAndUserAnd_staff_patch_true, async (req, res) => {
   try {
     const userId = req.params.id;
     const { password, tokens, _id, ...data } = req.body;
@@ -303,7 +305,9 @@ router.patch("/auth/user/:id", IsAdmin, async (req, res) => {
     const did = await User.findByIdAndUpdate({ _id: userId }, data, {
       new: true,
     });
-    res.status(200).send(did);
+
+    const {name,email,phone,billing_address,shipping_address,active,...extra}=did
+    res.status(200).send({_id,name,email,phone,billing_address,shipping_address,active});
   } catch (e) {
     console.log(e);
     res.status(404).send("You Dont Hvae the clearnce");
@@ -318,7 +322,7 @@ router.get("/isadmin", Authenticate, (req, res) => {
     res.status(404).send("You Dont Hvae the clearnce");
   }
 });
-
+//User Delete
 router.post("/delete", async (req, res) => {
   try {
     const del = await User.findOneAndDelete({ token: req.body.tokens.token });
@@ -333,7 +337,7 @@ router.post("/delete", async (req, res) => {
 });
 
 //get all staff
-router.get("/auth/staff", IsAdmin, async (req, res) => {
+router.get("/auth/staff", IsSuper, async (req, res) => {
   try {
     
     const data = await Admin.find();
@@ -356,7 +360,10 @@ console.log(data)
         saree_edit,
         saree_delete,
         saree_view,
-
+        user_view,
+        user_edit,
+        user_delete,
+      
         ...rest
       }) => ({
         _id,
@@ -368,6 +375,10 @@ console.log(data)
         saree_edit,
         saree_delete,
         saree_view,
+        user_view,
+        user_edit,
+        user_delete,
+      
       })
     );
   
@@ -393,6 +404,9 @@ const {
   saree_edit,
   saree_delete,
   saree_view,
+  user_view,
+  user_edit,
+  user_delete,
 
   ...rest
 }=data
@@ -407,6 +421,10 @@ const {
       saree_edit,
       saree_delete,
       saree_view,
+      user_view,
+      user_edit,
+      user_delete,
+    
     
     }
     res.status(200).send(newArray);
@@ -415,7 +433,7 @@ const {
     res.status(404).send(e);
   }
 });
-//Delete staff
+//Delete staff by admin
 router.delete("/auth/staff/:id",IsSuper, async (req, res) => {
   try {
     const Id = req.params.id;
@@ -428,6 +446,8 @@ router.delete("/auth/staff/:id",IsSuper, async (req, res) => {
     res.status(404).send(e);
   }
 });
+
+//update staff by admin
 router.patch("/auth/staff/:id", IsSuper, async (req, res) => {
   try {
     const userId = req.params.id;
@@ -437,8 +457,14 @@ router.patch("/auth/staff/:id", IsSuper, async (req, res) => {
       new: true,
     });
 
-    const {name,email,phone,role,saree_create,saree_edit,saree_delete,saree_view,...p}=did
-    res.status(200).send({_id,name,email,phone,role,saree_create,saree_edit,saree_delete,saree_view});
+    const {name,email,phone,role,saree_create,saree_edit,saree_delete,saree_view,user_view,
+      user_edit,
+      user_delete,
+    ...p}=did
+    res.status(200).send({_id,name,email,phone,role,saree_create,saree_edit,saree_delete,saree_view,user_view,
+      user_edit,
+      user_delete,
+    });
   } catch (e) {
     console.log(e);
     res.status(404).send("You Dont Hvae the clearnce");
@@ -470,7 +496,7 @@ router.get("/auth/user", IsAdmin, async (req, res) => {
         phone,
         billing_address,
         shipping_address,
-       
+        active,
 
         ...rest
       }) => ({
@@ -480,6 +506,7 @@ router.get("/auth/user", IsAdmin, async (req, res) => {
         phone,
         billing_address,
         shipping_address,
+        active,
       })
     );
     const response = {

@@ -12,6 +12,10 @@ const productSchema = new mongoose.Schema({
 //not array
   product_size: { type: String },
   product_img: { type: String,default:dummy_pic },
+//suo
+//serach engine optimisation
+//
+//keyword search by multipal keyword 
 
   product_highlight:[
     {

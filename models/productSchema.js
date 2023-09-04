@@ -43,7 +43,7 @@ const productSchema = new mongoose.Schema({
   ],
   active:{type: Boolean,default:true},
   instock:{type: Boolean,default:true},
-  product_discount:{type: Number},
+  product_discount:{type: Number,default:0},
   product_price:{type: Number}
 
 

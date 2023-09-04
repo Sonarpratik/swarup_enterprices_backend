@@ -102,22 +102,47 @@ router.get("/api/trending", async (req, res) => {
     // const productIds=data.map((item)=>item.product_id)
     // const productx=await Trending.find({_id:{ $in: productIds } })
 
+    const productIds=data.map((item)=>item.product_id)
+const productx=await Product.find({_id:{ $in: productIds } })
+const new_data=productx.filter((item)=>item.active===true)
+
+    res.status(200).json(new_data);
+  } catch (err) {
+    console.log(err);
+  }
+});
+router.delete("/api/trending",IsAdmin, async (req, res) => {
+  try {
+  
+    const data = await Trending.findOneAndDelete({product_id:req.body._id});
+    // const productIds=data.map((item)=>item.product_id)
+    // const productx=await Trending.find({_id:{ $in: productIds } })
+
+
     res.status(200).json(data);
   } catch (err) {
     console.log(err);
   }
 });
-router.post("/api/trending", async (req, res) => {
+
+//create trending product by _id
+router.post("/api/trending",IsAdmin, async (req, res) => {
   try {
   console.log(req.body._id)
 
   const data={
     product_id:req.body._id
   }
-  const product = new Trending(data);
+  const found=await Trending.findOne({product_id:req.body._id})
+if(found){
+  res.status(200).json({message:"Already Added"})
+}else{
 
+  const product = new Trending(data);
+  
   const created = await product.save();
-    res.status(201).json(created);
+  res.status(201).json(created);
+}
   } catch (err) {
     console.log(err);
   }

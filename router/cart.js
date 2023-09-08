@@ -74,7 +74,7 @@ router.post("/api/remove/cart", Authenticate, async (req, res) => {
       console.log(User);
 
       User.products = User.products.filter(product => {
-        const productId = product.product_id.toString();
+        const productId = product?.product_id?.toString();
         return productId !== req.body._id;
       });
 
@@ -98,7 +98,7 @@ router.post("/api/remove/wishlist", Authenticate, async (req, res) => {
       console.log(User);
 
       User.products = User.products.filter(product => {
-        const productId = product.product_id.toString();
+        const productId = product?.product_id?.toString();
         return productId !== req.body._id;
       });
 

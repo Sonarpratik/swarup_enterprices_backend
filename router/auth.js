@@ -262,8 +262,8 @@ router.post("/auth/admin/login", async (req, res) => {
 
 //universal verify
 router.get("/auth/verify", Authenticate, (req, res) => {
-  const { _id, name, email, phone, address,cart,wishlist, ...data } = req.rootUser;
-  res.status(200).send({ _id, name, email, address, phone ,cart,wishlist});
+  const { _id, name, email, phone, billing_address,shipping_address, ...data } = req.rootUser;
+  res.status(200).send({ _id, name, email, phone , billing_address,shipping_address});
 });
 
 //Only ADMIN AND STAFF

@@ -49,22 +49,22 @@ router.patch("/api/product/:id", IsAdmin_Product_Update, async (req, res) => {
 //Get All Products
 router.get("/api/product", async (req, res) => {
   try {
-    const { page, limit, product_name, product_size, ...resa } = req.query;
+    const { page, limit, product_name, ...resa } = req.query;
     if (product_name) {
       resa.product_name = { $regex: product_name };
     }
 
-    if (product_size) {
-      try {
-        const product_sizeString = product_size.join(",");
-        if (product_size) {
-          const sizes = product_sizeString.split(",");
-          resa.product_size = { $in: sizes };
-        }
-      } catch (e) {
-        resa.product_size = product_size;
-      }
-    }
+    // if (product_size) {
+    //   try {
+    //     const product_sizeString = product_size.join(",");
+    //     if (product_size) {
+    //       const sizes = product_sizeString.split(",");
+    //       resa.product_size = { $in: sizes };
+    //     }
+    //   } catch (e) {
+    //     resa.product_size = product_size;
+    //   }
+    // }
     console.log(resa);
     // Convert the product_size query parameter into an array
     // const page = req.query.page;

@@ -16,6 +16,36 @@ app.use(cors());
 
 
 
+var ccavReqHandler = require('./ccavRequestHandler.js'),
+    ccavResHandler = require('./ccavResponseHandler.js');
+    ccCus=require("./custonRes.js")
+
+app.use(express.static('public'));
+app.set('views', __dirname + '/public');
+app.engine('html', require('ejs').renderFile);
+
+
+app.get('/about', function (req, res){
+    	res.render('dataFrom.html');
+});
+
+app.post('/ccavRequestHandler', function (request, response){
+    console.log("hello")
+	ccavReqHandler.postReq(request, response);
+});
+
+
+app.post('/ccavResponseHandler', function (request, response){
+        ccavResHandler.postRes(request, response);
+});
+app.post('/abort', function (request, response){
+    //    response.send("Abort")
+    ccCus.postCus(request, response);
+
+    //    response.redirect('http://localhost:3000');
+});
+
+
 
 
 require('./allFiles/Allfun')

@@ -29,9 +29,9 @@ const productSchema = new mongoose.Schema({
 //not array
   product_color:{type: String},
 
-  product_occasion:{type: String},
-  product_type:{type: String},
-  product_Fabric:{type: String},
+  product_occasion:{type: String,default:"All Occasions"},
+  product_style:{type: String,default:"All Styles"},
+  product_Fabric:{type: String,default:"All Fabrics"},
   
   product_Work:{type: String},
   product_country_of_origin:{type: String},

@@ -63,6 +63,7 @@ app.use(require('./router/auth'))
 // app.use(require('./router/auth'))
 app.use(require('./router/product'))
 app.use(require('./router/cart'))
+app.use(require('./router/order'))
 // require('./router/auth')
 
 

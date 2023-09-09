@@ -6,7 +6,6 @@ const dummy_pic="https://imgs.search.brave.com/neBrELOnsfK49yJraJ6s05kKhr38cFT0U
 const productSchema = new mongoose.Schema({
   product_name: { type: String, required: true },
   product_sku: { type: String, required: true },
-  product_img: { type: String, required: true },
   product_shipping_details: { type: String, required: true },
   product_description: { type: String },
 //not array

@@ -11,51 +11,54 @@ const {
 } = require("../middleware/authenticate.js");
 const wishlist = require("../models/wishlistSchema");
 const Product = require("../models/productSchema");
+const Order = require("../models/orderSchema");
 
-router.post("/api/order", Authenticate, async (req, res) => {
+router.post("/api/order", async (req, res) => {
   try {
-    const get_product=req.body
-    const new_updatedObject = {
-      ...get_product,
-      product_id: get_product._id// Optional, to remove the original _id field if needed
+   
+    // const user = new Order(req.body);
+    console.log(req.body)
+
+    
+const convertedData = req.body.map(item => {
+  return {
+      ...item,
+      product_id: item.product_id.replace('new ObjectId("', '').replace('")', '')
   };
-  delete new_updatedObject._id;
+});
 
+    const value=await Order.insertMany(convertedData)
+    res.status(201).json(value)
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Cart Not Created");
+  }
+});
+router.get("/api/order", async (req, res) => {
+  try {
+   
+    // const user = new Order(req.body);
+    const { page, limit, ...resa } = req.query;
+  
 
-    const { _id } = req.rootUser;
-    const User = await Cart.findOne({ user_id: _id });
-    if (!User) {
-      // throw new Error('User not found');
-      const structure = {
-        user_id: _id,
-        products: [new_updatedObject],
-      };
-      const product = new Cart(structure);
-      console.log("new cart");
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const totalCount = await Order.countDocuments(resa);
+    // const sortedProductSizes = resa.product_size.slice().sort();
+    // console.log(sortedProductSizes)
+    // Fetch data with pagination using skip() and limit()
+    const data = await Order.find(resa).skip(startIndex).limit(limit);
+    // Calculate total pages for pagination
+    const totalPages = Math.ceil(totalCount / limit);
+    // const product = await Product.find();
 
-      await product.save();
-      res.status(201).send(structure);
-    } else {
-
-      const check=User.products.find((item)=>item.product_id===new_updatedObject.product_id)
-if(!check){
-
-
-  console.log("hello",check)
-
-  User?.products.push(new_updatedObject);
-  console.log("update cart");
-  const did = await User.save();
-  res.status(200).send(did);
-
-}else{
-
-  console.log("hello",check)
-  console.log("hello",new_updatedObject.product_id)
-
-  res.status(200).send(User);
-}
-}
+    const response = {
+      currentPage: page,
+      totalPages: totalPages,
+      totalItems: totalCount,
+      data: data,
+    };
+    res.status(200).json(response)
   } catch (err) {
     console.log(err);
     res.status(400).send("Cart Not Created");

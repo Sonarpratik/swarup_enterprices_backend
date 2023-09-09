@@ -8,6 +8,8 @@ const orderSchema = new mongoose.Schema({
 order_id:{ type: String, required: true },
 user_id:{ type: String, required: true },
 product_id:{ type: String, required: true },
+order_state:{type:String,default:"SHIPPING"},
+date_of_order:{type: String},
   product_name: { type: String, required: true },
   product_sku: { type: String, required: true },
   product_img: { type: String, required: true },
@@ -21,15 +23,7 @@ product_id:{ type: String, required: true },
 //
 //keyword search by multipal keyword 
 
-  product_highlight:[
-    {
-      title:{
-        type: String,
-      },
-      desc:
-       { type: String}
-    }
-  ],
+
 //not array
   product_color:{type: String},
   product_occasion:{type: String},
@@ -37,14 +31,7 @@ product_id:{ type: String, required: true },
   product_Fabric:{type: String},
   product_Work:{type: String},
   product_country_of_origin:{type: String},
-  wash_care:[
-    {
-      instructions:{
-        type: String,
-      }
-     
-    }
-  ],
+
   active:{type: Boolean,default:true},
   instock:{type: Boolean,default:true},
   product_discount:{type: Number,default:0},

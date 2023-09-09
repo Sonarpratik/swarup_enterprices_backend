@@ -126,7 +126,6 @@ router.get("/api/cart/:id", IsAdminAndUser, async (req, res) => {
     } else {
       const productIds = cart?.products?.map((item) => item.product_id);
 const productx=await Product.find({_id:{ $in: productIds } })
-console.log("prod",productx)
 
 const new_cart={
   _id:cart._id,
@@ -134,7 +133,6 @@ const new_cart={
   products:productx
 }
 new_cart.products=productx
-console.log(new_cart)
       res.status(200).send(new_cart);
     }
   } catch (err) {

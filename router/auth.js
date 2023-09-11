@@ -262,8 +262,8 @@ router.post("/auth/admin/login", async (req, res) => {
 
 //universal verify
 router.get("/auth/verify", Authenticate, (req, res) => {
-  const { _id, name, email, phone, billing_address,shipping_address, ...data } = req.rootUser;
-  res.status(200).send({ _id, name, email, phone , billing_address,shipping_address});
+  const { _id, name, email,  billing_address,shipping_address,billing_zip,shipping_zip,billing_phone,shipping_phone,billing_state,billing_city,shipping_state,shipping_city, ...data } = req.rootUser;
+  res.status(200).send({ _id, name, email , billing_address,shipping_address,billing_zip,shipping_zip,billing_phone,shipping_phone,billing_state,billing_city,shipping_state,shipping_city});
 });
 
 //Only ADMIN AND STAFF
@@ -306,8 +306,8 @@ router.patch("/auth/user/:id", IsAdminAndUserAnd_staff_patch_true, async (req, r
       new: true,
     });
 
-    const {name,email,phone,billing_address,shipping_address,active,...extra}=did
-    res.status(200).send({_id,name,email,phone,billing_address,shipping_address,active});
+    const {name,email,billing_address,shipping_address,active,...extra}=did
+    res.status(200).send({_id,name,email,billing_address,shipping_address,active});
   } catch (e) {
     console.log(e);
     res.status(404).send("You Dont Hvae the clearnce");

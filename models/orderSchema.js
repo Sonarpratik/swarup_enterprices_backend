@@ -5,11 +5,39 @@ const dummy_pic="https://imgs.search.brave.com/neBrELOnsfK49yJraJ6s05kKhr38cFT0U
 
 const orderSchema = new mongoose.Schema({
 
+
+
+
+  billing_address: { type: String },
+  shipping_address: { type: String },
+  
+  billing_zip:{type: Number},
+  shipping_zip:{type: Number},
+  billing_phone:{type: Number},
+  shipping_phone:{type: Number},
+  billing_state:{type: String},
+  billing_city:{type: String},
+  shipping_state:{type: String},
+  shipping_city:{type: String},
+  billing_name:{type: String},
+  shipping_name:{type: String},
+
+
+
+
+
+
+
+
+
+
+
 order_id:{ type: String, required: true },
+
 user_id:{ type: String, required: true },
 product_id:{ type: String, required: true },
 order_state:{type:String,default:"SHIPPING"},
-date_of_order:{type: String},
+date_of_order: { type: Date, default: Date.now },
   product_name: { type: String, required: true },
   product_sku: { type: String, required: true },
   product_img: { type: String, required: true },
@@ -18,6 +46,7 @@ date_of_order:{type: String},
 //not array
   product_size: { type: String },
   product_img: { type: String,default:dummy_pic },
+  
 //suo
 //serach engine optimisation
 //

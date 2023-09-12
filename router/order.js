@@ -73,5 +73,41 @@ router.get("/api/order", async (req, res) => {
   }
 });
 
+router.delete("/api/order/:id", async (req, res) => {
+  try {    
+    const orderID = req.params.id;
+ 
+  const Data=await Order.findByIdAndDelete({_id:orderID})
+    res.status(200).json(Data);
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Cart Not Created");
+  }
+});
+router.patch("/api/order/:id", async (req, res) => {
+  try {    
+    const orderID = req.params.id;
+ const {_id,order_id,product_id,date_of_order,user_id,...data}=req.body
+ console.log(data)
+  const Data=await Order.findByIdAndUpdate({_id:orderID}, data, {
+    new: true,
+  })
+    res.status(200).json(Data);
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Cart Not Created");
+  }
+});
+router.get("/api/order/:id", async (req, res) => {
+  try {    
+    const orderID = req.params.id;
+  const Data=await Order.findById({_id:orderID})
+    res.status(200).json(Data);
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Cart Not Created");
+  }
+});
+
 
 module.exports = router;

@@ -49,9 +49,15 @@ router.patch("/api/product/:id", IsAdmin_Product_Update, async (req, res) => {
 //Get All Products
 router.get("/api/product", async (req, res) => {
   try {
-    const { page, limit, product_name, ...resa } = req.query;
+    const { page, limit, product_name,sort,max_price,min_price,min_discount,max_discount, ...resa } = req.query;
     if (product_name) {
       resa.product_name = { $regex: product_name };
+    }
+    if (min_price && max_price) {
+      resa.product_price = { $gte: parseInt(min_price), $lte: parseInt(max_price) };
+    }
+    if (min_discount && max_discount) {
+      resa.product_discount = { $gte: parseInt(min_discount), $lte: parseInt(max_discount) };
     }
 
     // if (product_size) {
@@ -78,7 +84,13 @@ router.get("/api/product", async (req, res) => {
     // const sortedProductSizes = resa.product_size.slice().sort();
     // console.log(sortedProductSizes)
     // Fetch data with pagination using skip() and limit()
-    const data = await Product.find(resa).skip(startIndex).limit(limit);
+    let query = Product.find(resa);
+
+    if (sort) {
+      query = query.sort({ product_price: sort });
+    }
+
+    const data = await query.skip(startIndex).limit(limit);
     // Calculate total pages for pagination
     const totalPages = Math.ceil(totalCount / limit);
     // const product = await Product.find();

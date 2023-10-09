@@ -76,6 +76,7 @@ const modifiedProducts = productx.map(product => {
 		shipping_city:last_obj.delivery_city,
 		shipping_name:last_obj.delivery_name,
 		billing_name:last_obj.billing_name,
+		paid:true,
 		...product
 	  };
   });
@@ -111,6 +112,8 @@ const modifiedProducts = productx.map(product => {
 	  shipping_city:last_obj.delivery_city,
 	  shipping_name:last_obj.delivery_name,
 	  billing_name:last_obj.billing_name,
+		paid:true,
+
 	  ...product
 	};
   });

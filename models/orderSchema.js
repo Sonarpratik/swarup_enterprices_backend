@@ -36,6 +36,7 @@ order_id:{ type: String, required: true },
 
 user_id:{ type: String, required: true },
 product_id:{ type: String, required: true },
+
 order_state:{type:String,default:"ORDERED"},
 date_of_order: { type: Date, default: Date.now },
   product_name: { type: String, required: true },
@@ -64,8 +65,9 @@ date_of_order: { type: Date, default: Date.now },
   active:{type: Boolean,default:true},
   instock:{type: Boolean,default:true},
   product_discount:{type: Number,default:0},
-  product_price:{type: Number}
-
+  product_price:{type: Number},
+  paid:{type:Boolean,default:false},
+product_quantity:{type:Number}
 
 
 });

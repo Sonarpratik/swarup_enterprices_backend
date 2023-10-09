@@ -60,26 +60,12 @@ router.get("/api/product", async (req, res) => {
       resa.product_discount = { $gte: parseInt(min_discount), $lte: parseInt(max_discount) };
     }
 
-    // if (product_size) {
-    //   try {
-    //     const product_sizeString = product_size.join(",");
-    //     if (product_size) {
-    //       const sizes = product_sizeString.split(",");
-    //       resa.product_size = { $in: sizes };
-    //     }
-    //   } catch (e) {
-    //     resa.product_size = product_size;
-    //   }
-    // }
-    console.log(resa);
-    // Convert the product_size query parameter into an array
-    // const page = req.query.page;
-    // const limit = req.query.limit;
 
+    console.log(resa);
+ 
     resa.active=true
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    console.log(resa)
     const totalCount = await Product.countDocuments(resa);
     // const sortedProductSizes = resa.product_size.slice().sort();
     // console.log(sortedProductSizes)

@@ -41,12 +41,13 @@ order_state:{type:String,default:"ORDERED"},
 date_of_order: { type: Date, default: Date.now },
   product_name: { type: String, required: true },
   product_sku: { type: String, required: true },
-  product_img: { type: String, required: true },
   product_shipping_details: { type: String, required: true },
   product_description: { type: String },
 //not array
   product_size: { type: String },
   product_img: { type: String,default:dummy_pic },
+  product_star: { type: Number,default:2 },
+  multi_img:[{type:String}],
   
 //suo
 //serach engine optimisation

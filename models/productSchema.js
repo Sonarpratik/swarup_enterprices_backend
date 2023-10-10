@@ -11,6 +11,7 @@ const productSchema = new mongoose.Schema({
 //not array
   product_size: { type: String },
   product_img: { type: String,default:dummy_pic },
+  multi_img:[{type:String}],
 //suo
 //serach engine optimisation
 //
@@ -27,6 +28,7 @@ const productSchema = new mongoose.Schema({
   ],
 //not array
   product_color:{type: String},
+  product_star:{type:Number,default:2},
 
   product_occasion:{type: String,default:"All Occasions"},
   product_style:{type: String,default:"All Styles"},

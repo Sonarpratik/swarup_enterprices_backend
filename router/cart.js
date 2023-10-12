@@ -17,8 +17,8 @@ router.post("/api/cart", Authenticate, async (req, res) => {
     const get_product=req.body
     const new_updatedObject = {
       ...get_product,
-      product_id: get_product._id// Optional, to remove the original _id field if needed
-  };
+      product_id: get_product._id,// Optional, to remove the original _id field if needed
+    };
   delete new_updatedObject._id;
 
 
@@ -61,6 +61,35 @@ if(!check){
     res.status(400).send("Cart Not Created");
   }
 });
+router.patch("/api/cart/quantity/:id",Authenticate,async(req,res)=>{
+  try{
+    // const { _id } = req.rootUser;
+    const user_id=req.params.id;
+    const {_id,quantity}=req.body
+    const User = await Cart.findOne({ user_id: user_id });
+    if (!User) {
+  
+      res.status(404).json({"data":"Cart Not Found"});
+    } else {
+      console.log(User);
+
+      const productToUpdate = User.products.find(product => product.product_id === _id);
+
+      if (productToUpdate) {
+        productToUpdate.quantity = quantity;
+        // res.json({ message: "Quantity updated successfully" });
+        
+      }
+      await User.save()
+      res.status(200).send(User)
+    }
+
+
+  }catch(error){
+    console.log(error)
+    res.status(500).json({"data":"Error While Changing Quantity"})
+  }
+})
 
 router.post("/api/remove/cart", Authenticate, async (req, res) => {
   try {
@@ -126,13 +155,24 @@ router.get("/api/cart/:id", IsAdminAndUser, async (req, res) => {
     } else {
       const productIds = cart?.products?.map((item) => item.product_id);
 const productx=await Product.find({_id:{ $in: productIds } })
-
 const new_cart={
   _id:cart._id,
   user_id:cart.user_id,
   products:productx
 }
+
 new_cart.products=productx
+
+new_cart.products.forEach((newProduct) => {
+  // Find the corresponding product in oldData
+  const matchingProduct = cart?.products?.find(
+    (oldProduct) => oldProduct.product_id+"s" === newProduct._id+"s"
+  );
+  if (matchingProduct) {
+    newProduct.quantity = matchingProduct.quantity;
+  }
+});
+
       res.status(200).send(new_cart);
     }
   } catch (err) {

@@ -35,7 +35,7 @@ const convertedData = req.body.map(item => {
       product_id: item.product_id.replace('new ObjectId("', '').replace('")', '')
   };
 });
-
+console.log("lion",convertedData)
     const value=await Order.insertMany(convertedData)
     const Carts = await Cart.findOne({ user_id: req.body[0].user_id });
     // const structure={
@@ -80,8 +80,8 @@ const obj={
     const uniqueRandomNumber = generateUniqueRandomNumber();
     
   const modifiedProducts = products.map(product => {
-    const {multi_img, product_price,product_discount,wash_care,product_country_of_origin,product_Work,product_Fabric,_id,product_occasion,product_star,product_name,product_sku,product_img,product_highlight,product_style,product_color,product_size,product_shipping_details,product_description, ...rest } = product; // Destructure _id and get the rest of the fields
-    return { product_id: _id,multi_img, product_price,product_discount,wash_care,product_country_of_origin,product_Work,product_Fabric,product_occasion,product_star,product_name,product_sku,product_img,product_highlight,product_style,product_color,product_size,product_shipping_details,product_description,...obj,order_id:uniqueRandomNumber}; // Create a new object with product_id and the rest of the fields
+    const {multi_img,quantity, product_price,product_discount,wash_care,product_country_of_origin,product_Work,product_Fabric,_id,product_occasion,product_star,product_name,product_sku,product_img,product_highlight,product_style,product_color,product_size,product_shipping_details,product_description, ...rest } = product; // Destructure _id and get the rest of the fields
+    return { product_id: _id,multi_img,quantity, product_price,product_discount,wash_care,product_country_of_origin,product_Work,product_Fabric,product_occasion,product_star,product_name,product_sku,product_img,product_highlight,product_style,product_color,product_size,product_shipping_details,product_description,...obj,order_id:uniqueRandomNumber}; // Create a new object with product_id and the rest of the fields
     });
 
     if(last_obj.type==="cart"){

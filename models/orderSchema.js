@@ -62,6 +62,7 @@ date_of_order: { type: Date, default: Date.now },
   product_Fabric:{type: String},
   product_Work:{type: String},
   product_country_of_origin:{type: String},
+  quantity:{type:Number,default:1},
 
   active:{type: Boolean,default:true},
   instock:{type: Boolean,default:true},

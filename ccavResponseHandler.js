@@ -57,9 +57,22 @@ const new_cart={
 }
 new_cart.products=productx
 const modifiedProducts = productx.map(product => {
-	const { product_price,product_discount,wash_care,product_country_of_origin,product_Work,product_Fabric,_id,product_occasion,product_name,product_sku,product_star,product_img,multi_img,product_highlight,product_style,product_color,product_size,product_shipping_details,product_description, ...rest } = product; // Destructure _id and get the rest of the fields
-	return { product_id: _id, product_price,product_discount,wash_care,product_country_of_origin,product_Work,product_Fabric,product_occasion,product_name,product_star,product_sku,multi_img,product_img,product_highlight,product_style,product_color,product_size,product_shipping_details,product_description}; // Create a new object with product_id and the rest of the fields
+	const { quantity,product_price,product_discount,wash_care,product_country_of_origin,product_Work,product_Fabric,_id,product_occasion,product_name,product_sku,product_star,product_img,multi_img,product_highlight,product_style,product_color,product_size,product_shipping_details,product_description, ...rest } = product; // Destructure _id and get the rest of the fields
+	return { product_id: _id, quantity,product_price,product_discount,wash_care,product_country_of_origin,product_Work,product_Fabric,product_occasion,product_name,product_star,product_sku,multi_img,product_img,product_highlight,product_style,product_color,product_size,product_shipping_details,product_description}; // Create a new object with product_id and the rest of the fields
   });
+
+  modifiedProducts.forEach((newProduct) => {
+	// Find the corresponding product in oldData
+	const matchingProduct = cart?.products?.find(
+	  (oldProduct) => oldProduct.product_id+"s" === newProduct.product_id+"s"
+	);
+	if (matchingProduct) {
+	  newProduct.quantity = matchingProduct.quantity;
+	}
+  });
+
+  
+  
   const modifiedProducts2 = modifiedProducts.map(product => {
 	return {
 		user_id: last_obj.merchant_param5,
@@ -93,8 +106,8 @@ const modifiedProducts = productx.map(product => {
 			}else{
 				const productx=await Product.find({_id:last_obj.merchant_param2 })
 const modifiedProducts = productx.map(product => {
-	const { product_price,product_discount,wash_care,product_country_of_origin,product_Work,product_Fabric,_id,product_occasion,product_name,product_sku,multi_img,product_star,product_img,product_highlight,product_style,product_color,product_size,product_shipping_details,product_description, ...rest } = product; // Destructure _id and get the rest of the fields
-	return { product_id: _id, product_price,product_discount,wash_care,product_country_of_origin,product_Work,product_Fabric,product_occasion,product_name,product_sku,multi_img,product_star,product_img,product_highlight,product_style,product_color,product_size,product_shipping_details,product_description}; // Create a new object with product_id and the rest of the fields
+	const { product_price,product_discount,quantity,wash_care,product_country_of_origin,product_Work,product_Fabric,_id,product_occasion,product_name,product_sku,multi_img,product_star,product_img,product_highlight,product_style,product_color,product_size,product_shipping_details,product_description, ...rest } = product; // Destructure _id and get the rest of the fields
+	return { product_id: _id, product_price,quantity,product_discount,wash_care,product_country_of_origin,product_Work,product_Fabric,product_occasion,product_name,product_sku,multi_img,product_star,product_img,product_highlight,product_style,product_color,product_size,product_shipping_details,product_description}; // Create a new object with product_id and the rest of the fields
   });
   const modifiedProducts2 = modifiedProducts.map(product => {
 	return {

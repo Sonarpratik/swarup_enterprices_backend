@@ -33,6 +33,7 @@ const productSchema = new mongoose.Schema({
   product_occasion:{type: String,default:"All Occasions"},
   product_style:{type: String,default:"All Styles"},
   product_Fabric:{type: String,default:"All Fabrics"},
+  quantity:{type:Number,default:1},
   
   product_Work:{type: String},
   product_country_of_origin:{type: String},

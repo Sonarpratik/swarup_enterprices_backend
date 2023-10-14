@@ -33,7 +33,7 @@ app.get('/payment', function(req, res){
     res.sendFile(__dirname + '/dataFrom.html');
 });
 app.get('/.well-known/pki-validation/117B8B17A66CCF2BE4A552E04D8EBBFC.txt',(req,res)=>{
-  res.sendFile(`117B8B17A66CCF2BE4A552E04D8EBBFC.txt`);
+  res.sendFile(__dirname + `/117B8B17A66CCF2BE4A552E04D8EBBFC.txt`);
 
 })
 

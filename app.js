@@ -2,9 +2,14 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 var fs = require("fs")
+const https=require('https')
 
-// const file=fs.readFileSync('./')
+const key=fs.readFileSync('private.key')
+const cert=fs.readFileSync('certificate.crt')
 
+const cred={
+  key,cert
+}
 
 
 const port = process.env.PORT || 8000;
@@ -86,3 +91,7 @@ app.get("*", (req, res) => {
 app.listen(port, () => {
   console.log(`server is running on port no ${port}`);
 });
+
+
+const httpsServer=https.createServer(cred,app)
+httpsServer.listen(8443)

@@ -1,6 +1,9 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+var fs = require("fs")
+
+// const file=fs.readFileSync('./')
 
 
 
@@ -29,6 +32,10 @@ io = require('socket.io')(http);
 app.get('/payment', function(req, res){
     res.sendFile(__dirname + '/dataFrom.html');
 });
+app.get('/.well-known/pki-validation/117B8B17A66CCF2BE4A552E04D8EBBFC.txt',(req,res)=>{
+  res.sendFile(`D:/AAA-KARMACTS/Saree Ecom/server/userBackend/117B8B17A66CCF2BE4A552E04D8EBBFC.txt`);
+
+})
 
 io.on('connection', function(socket){
     console.log('a user connected');

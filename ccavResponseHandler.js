@@ -8,7 +8,7 @@ const Product = require('./models/productSchema.js');
 const Order = require('./models/orderSchema.js');
 const { default: axios } = require('axios');
 const User = require('./models/userSchema.js');
-
+import {url,frontURL} from './url'
 
 
 exports.postRes = function (request,response){
@@ -30,7 +30,7 @@ exports.postRes = function (request,response){
 		// console.log(last_obj)
 		if(last_obj.order_status==="Aborted"){
 
-			response.status(200).redirect("http://localhost:3000/payment/result/?data=" + encodeURIComponent(JSON.stringify(last_obj)));
+			response.status(200).redirect(`${frontURL}payment/result/?data=` + encodeURIComponent(JSON.stringify(last_obj)));
 
 		}else if(last_obj.order_status==="Success"){
 
@@ -94,7 +94,7 @@ const modifiedProducts = productx.map(product => {
 	  };
   });
  
-  await axios.post('http://localhost:8000/api/order', 
+  await axios.post(`${url}api/order`, 
      modifiedProducts2
   , {
     headers: {
@@ -148,7 +148,7 @@ const convertedData = modifiedProducts2?.map(item => {
   const value=await Order.insertMany(convertedData)
 console.log("Order",value)
 			}
-			response.status(200).redirect("http://localhost:3000/payment/result/?data=" + encodeURIComponent(JSON.stringify(last_obj)));
+			response.status(200).redirect(`${frontURL}payment/result/?data=` + encodeURIComponent(JSON.stringify(last_obj)));
 
 		}
 		else if(last_obj.order_status==="Invalid"){
@@ -172,7 +172,7 @@ console.log("Order",value)
 			// response.status(200).send(last_obj)
 
 		}else{
-			response.status(200).redirect("http://localhost:3000/payment/result/?data=" + encodeURIComponent(JSON.stringify(last_obj)));
+			response.status(200).redirect(`${frontURL}payment/result/?data=` + encodeURIComponent(JSON.stringify(last_obj)));
 
 		}
 		

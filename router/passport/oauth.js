@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const axios = require("axios"); // Import the axios library
 const { OAuth2Client } = require("google-auth-library");
 const User = require("../../models/userSchema");
+const { url } = require("../../url");
 
 dotenv.config();
 
@@ -40,7 +41,7 @@ router.get("/verify", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const code = req.query.code;
-    const redirectUrl = "http://localhost:8000/oauth";
+    const redirectUrl = `${url}oauth`;
     const oAuth2Client = new OAuth2Client(
       process.env.CLIENT_ID,
       process.env.SECRET_AUTH_KEY,

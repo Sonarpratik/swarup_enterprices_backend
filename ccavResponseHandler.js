@@ -8,7 +8,8 @@ const Product = require('./models/productSchema.js');
 const Order = require('./models/orderSchema.js');
 const { default: axios } = require('axios');
 const User = require('./models/userSchema.js');
-import {url,frontURL} from './url'
+// import {url,frontURL} from './url'
+const { url,frontURL } = require("./url");
 
 
 exports.postRes = function (request,response){

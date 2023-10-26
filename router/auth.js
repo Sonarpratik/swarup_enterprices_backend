@@ -68,7 +68,7 @@ router.post("/auth/register", async (req, res) => {
 });
 
 //Admin Register
-router.post("/auth/admin/register",IsSuper, async (req, res) => {
+router.post("/auth/admin/register", async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
     const { cpassword, ...data } = req.body;

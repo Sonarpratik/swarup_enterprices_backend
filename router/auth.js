@@ -68,7 +68,7 @@ router.post("/auth/register", async (req, res) => {
 });
 
 //Admin Register
-router.post("/auth/admin/register",IsSuper, async (req, res) => {
+router.post("/auth/admin/register", async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
     const { cpassword, ...data } = req.body;
@@ -165,7 +165,9 @@ router.post("/auth/google/login", async (req, res) => {
 
       const tokenExpirationDateTime = new Date(Date.now() + tokenExpiration*1000);
       // console.log(tokenExpirationDateTime)
-      userLogin.tokens.push({ token, expiresAt: tokenExpirationDateTime });
+      // userLogin.tokens.push({ token, expiresAt: tokenExpirationDateTime });
+      userLogin.tokens[0]=({ token, expiresAt: tokenExpirationDateTime });
+
       await userLogin.save();
     
         const userToken = {
@@ -195,7 +197,8 @@ router.post("/auth/google/login", async (req, res) => {
           
                 const tokenExpirationDateTime = new Date(Date.now() + tokenExpiration*1000);
                 console.log(tokenExpirationDateTime)
-                userLogin.tokens.push({ token, expiresAt: tokenExpirationDateTime });
+                // userLogin.tokens.push({ token, expiresAt: tokenExpirationDateTime });
+                userLogin.tokens[0]=({ token, expiresAt: tokenExpirationDateTime });
                 await userLogin.save();
             }  
 
@@ -241,7 +244,9 @@ router.post("/auth/admin/login", async (req, res) => {
 
       const tokenExpirationDateTime = new Date(Date.now() + tokenExpiration*1000);
       console.log(tokenExpirationDateTime)
-      userLogin.tokens.push({ token, expiresAt: tokenExpirationDateTime });
+      // userLogin.tokens.push({ token, expiresAt: tokenExpirationDateTime });
+      userLogin.tokens[0]=({ token, expiresAt: tokenExpirationDateTime });
+
       await userLogin.save();
       if (!inMatch) {
         return res.status(401).send("invalid credentials");

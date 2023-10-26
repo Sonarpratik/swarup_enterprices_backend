@@ -41,6 +41,7 @@ order_state:{type:String,default:"ORDERED"},
 date_of_order: { type: Date, default: Date.now },
   product_name: { type: String, required: true },
   product_sku: { type: String, required: true },
+  order_details: { type: String},
   product_shipping_details: { type: String, required: true },
   product_description: { type: String },
 //not array

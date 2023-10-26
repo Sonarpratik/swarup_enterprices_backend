@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
 
-  billing_address: { type: String,default:"lasur naka" },
+  billing_address: { type: String },
   shipping_address: { type: String },
 
   billing_zip:{type: Number},

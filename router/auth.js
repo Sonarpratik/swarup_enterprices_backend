@@ -476,7 +476,7 @@ router.patch("/auth/staff/:id", IsSuper, async (req, res) => {
   }
 });
 //get all user
-router.get("/auth/user", IsAdmin, async (req, res) => {
+router.get("/auth/user", async (req, res) => {
   try {
     const page = req.query.page;
     const limit = req.query.limit;

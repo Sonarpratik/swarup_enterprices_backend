@@ -20,12 +20,10 @@ dotenv.config();
 
 const cors = require("cors")
 app.use(cors());
+
+
 http = require('http').Server(app),
 io = require('socket.io')(http);
-
-//var express = require('express');
-//var app = express();
-//var http = require('http'),
     fs = require('fs'),
     ccav = require('./ccavutil.js'),
     qs = require('querystring'),

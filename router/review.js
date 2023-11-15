@@ -89,4 +89,19 @@ res.status(200).json(response);
   }
 });
 
+
+router.delete("/review/:id",async(req,res)=>{
+  try {
+    const id = req.params.id;
+
+    const review = await Review.findByIdAndDelete({ _id: id });
+
+    res.status(200).json(review);
+  } catch (err) {
+    res.status(404).json({ data: "product not found" });
+
+    console.log(err);
+  }
+})
+
 module.exports = router;

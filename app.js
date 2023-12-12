@@ -2,14 +2,8 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 var fs = require("fs")
-const https=require('https')
 
-const key=fs.readFileSync('private.key')
-const cert=fs.readFileSync('certificate.crt')
 
-const cred={
-  key,cert
-}
 
 
 const port = process.env.PORT || 8000;
@@ -35,10 +29,8 @@ io = require('socket.io')(http);
 app.get('/payment', function(req, res){
     res.sendFile(__dirname + '/dataFrom.html');
 });
-app.get('/.well-known/pki-validation/117B8B17A66CCF2BE4A552E04D8EBBFC.txt',(req,res)=>{
-  res.sendFile(__dirname + `/117B8B17A66CCF2BE4A552E04D8EBBFC.txt`);
 
-})
+
 
 io.on('connection', function(socket){
     console.log('a user connected');
@@ -66,11 +58,8 @@ require('./db/conn')
 app.use(express.json());
 
 //We connect to the router to free the space in app js
-var authRouter=require('./router/passport/oauth')
 // var requestRoute=require('./router/auth')
-app.use('/oauth',authRouter)
 app.use(require('./router/auth'))
-app.use('/aws',require('./router/aws'))
 // app.use(require('./router/auth'))
 app.use(require('./router/product'))
 app.use(require('./router/cart'))
@@ -92,5 +81,3 @@ app.listen(port, () => {
 });
 
 
-const httpsServer=https.createServer(cred,app)
-httpsServer.listen(443)

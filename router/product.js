@@ -47,7 +47,7 @@ router.patch("/api/product/:id", IsAdmin_Product_Update, async (req, res) => {
 });
 
 //Get All Products
-router.get("/api/product",Authenticate, async (req, res) => {
+router.get("/api/product", async (req, res) => {
   try {
     const { page, limit, product_name,sort,max_price,min_price,min_discount,max_discount, ...resa } = req.query;
     if (product_name) {
@@ -199,6 +199,8 @@ router.get("/api/product/:id", async (req, res) => {
 
     const product = await Product.findById({ _id: id });
 
+
+    
     res.status(200).json(product);
   } catch (err) {
     res.status(404).json({ data: "product not found" });

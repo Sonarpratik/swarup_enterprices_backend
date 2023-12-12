@@ -37,9 +37,11 @@ const { page, limit, ...resa } = req.query;
 const startIndex = (page - 1) * limit;
 const endIndex = page * limit;
 const totalCount = await Review.countDocuments(resa);
+const {user_id,...datas}=resa
 
-let query = Review.find(resa);
-
+const new_resa={$or: [ { _id: user_id }, { product_id: user_id } ],...datas}
+console.log("lion1",new_resa)
+let query = Review.find(new_resa);
 
 
 const data = await query.skip(startIndex).limit(limit);
@@ -70,6 +72,7 @@ const modifiedReviews = data.map(review => ({
   product_id: review.product_id,
   rating: review.rating,
   description: review.description,
+  date:review.date,
   __v: review.__v
 }));
 

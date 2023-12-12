@@ -5,6 +5,8 @@ const reviewSchema = new mongoose.Schema({
   product_id: { type: String },
   rating: { type: Number },
   description: { type: String },
+  date: { type: Date, default: Date.now },
+
 });
 
 const Review = mongoose.model("REVIEW", reviewSchema);

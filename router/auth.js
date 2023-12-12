@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const dotenv = require('dotenv')
 const jst_decode=require('jwt-decode')
 dotenv.config()
-const {OAuth2Client}=require('google-auth-library')
 
 const User = require("../models/userSchema");
 const Admin = require("../models/adminSchema");
@@ -24,24 +23,6 @@ router.get("/", (req, res) => {
   res.send("hello world in auth");
 });
 
-router.post('/',async (req,res,next)=>{
-// res.header('Access-Contorl-Allow-Origin')
-res.header('Referrer-Policy','no-referrer-when-downgrade')
-
-const redirectUrl='http://localhost:8000/oauth'
-const oAuth2Client=new OAuth2Client(
-  process.env.CLIENT_ID,
-  process.env.SECRET_AUTH_KEY,
-  redirectUrl
-)
-const authoriseUrl = oAuth2Client.generateAuthUrl({
-  access_type: 'offline',
-  scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid',
-  prompt: 'consent'
-});
-res.json({url:authoriseUrl})
-
-})
 
 //User Register
 router.post("/auth/register", async (req, res) => {
@@ -49,13 +30,13 @@ router.post("/auth/register", async (req, res) => {
     const { name, email,  password } = req.body;
     const { cpassword, ...data } = req.body;
     if (!name || !email  || !password || !cpassword ) {
-      return res.status(500).json({ error: "Fill all data" });
+      return res.status(500).json({ message: "Fill all data" });
     }
     const userExist = await User.findOne({ email: req.body.email });
     if (userExist) {
-      return res.status(500).json({ error: "email already exist" });
+      return res.status(500).json({ message: "email already exist" });
     } else if (password !== cpassword) {
-      return res.status(500).json({ error: "Passwords are different" });
+      return res.status(500).json({ message: "Passwords are different" });
     }
 
     const user = new User(data);
@@ -73,13 +54,13 @@ router.post("/auth/admin/register",IsSuper, async (req, res) => {
     const { name, email, phone, password } = req.body;
     const { cpassword, ...data } = req.body;
     if (!name || !email || !phone || !password || !cpassword) {
-      return res.status(500).json({ error: "Fill all data" });
+      return res.status(500).json({ message: "Fill all data" });
     }
     const userExist = await Admin.findOne({ email: req.body.email });
     if (userExist) {
-      return res.status(500).json({ error: "email already exist" });
+      return res.status(500).json({ message: "email already exist" });
     } else if (password !== cpassword) {
-      return res.status(500).json({ error: "Passwords are different" });
+      return res.status(500).json({ message: "Passwords are different" });
     }
 
     const user = new Admin(data);
@@ -98,7 +79,7 @@ router.post("/auth/login", async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(401).json({ error: "Plz fill all data" });
+      return res.status(401).json({ message: "Plz fill all data" });
     }
 
     const userLogin = await User.findOne({ email: email });
@@ -145,7 +126,8 @@ router.post("/auth/google/login", async (req, res) => {
     const userobj=jst_decode(Gtoken)
     if(!userobj){
       res.status(404).send("Token Error")
-    }
+    }else{
+
 
   
 
@@ -210,6 +192,7 @@ router.post("/auth/google/login", async (req, res) => {
               console.log("CRETAED")
               res.status(200).json(userToken);
     }
+  }
   } catch (err) {
     console.log(err);
     return res.status(404).send(err);
@@ -225,7 +208,7 @@ router.post("/auth/admin/login", async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(401).json({ error: "Plz fill all data" });
+      return res.status(401).json({ message: "Plz fill all data" });
     }
 
     const userLogin = await Admin.findOne({ email: email });

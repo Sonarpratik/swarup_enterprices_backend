@@ -49,7 +49,7 @@ router.post("/auth/register", async (req, res) => {
 });
 
 //Admin Register
-router.post("/auth/admin/register",IsSuper, async (req, res) => {
+router.post("/auth/admin/register", async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
     const { cpassword, ...data } = req.body;
@@ -262,10 +262,10 @@ router.get("/auth/verify/admin", IsAdmin, (req, res) => {
     email,
     phone,
     role,
-    saree_create,
-    saree_edit,
-    saree_delete,
-    saree_view,
+    product_create,
+    product_edit,
+    product_delete,
+    product_view,
     ...data
   } = req.rootUser;
 
@@ -277,10 +277,10 @@ router.get("/auth/verify/admin", IsAdmin, (req, res) => {
       email,
       phone,
       role,
-      saree_create,
-      saree_edit,
-      saree_delete,
-      saree_view,
+      product_create,
+      product_edit,
+      product_delete,
+      product_view,
     });
 });
 
@@ -344,10 +344,10 @@ console.log(data)
         email,
         phone,
         role,
-        saree_create,
-        saree_edit,
-        saree_delete,
-        saree_view,
+        product_create,
+        product_edit,
+        product_delete,
+        product_view,
         user_view,
         user_edit,
         user_delete,
@@ -359,10 +359,10 @@ console.log(data)
         email,
         phone,
         role,
-        saree_create,
-        saree_edit,
-        saree_delete,
-        saree_view,
+        product_create,
+        product_edit,
+        product_delete,
+        product_view,
         user_view,
         user_edit,
         user_delete,
@@ -388,10 +388,10 @@ const {
   email,
   phone,
   role,
-  saree_create,
-  saree_edit,
-  saree_delete,
-  saree_view,
+  product_create,
+  product_edit,
+  product_delete,
+  product_view,
   user_view,
   user_edit,
   user_delete,
@@ -405,10 +405,10 @@ const {
       email,
       phone,
       role,
-      saree_create,
-      saree_edit,
-      saree_delete,
-      saree_view,
+      product_create,
+      product_edit,
+      product_delete,
+      product_view,
       user_view,
       user_edit,
       user_delete,
@@ -445,11 +445,11 @@ router.patch("/auth/staff/:id", IsSuper, async (req, res) => {
       new: true,
     });
 
-    const {name,email,phone,role,saree_create,saree_edit,saree_delete,saree_view,user_view,
+    const {name,email,phone,role,product_create,product_edit,product_delete,product_view,user_view,
       user_edit,
       user_delete,
     ...p}=did
-    res.status(200).send({_id,name,email,phone,role,saree_create,saree_edit,saree_delete,saree_view,user_view,
+    res.status(200).send({_id,name,email,phone,role,product_create,product_edit,product_delete,product_view,user_view,
       user_edit,
       user_delete,
     });

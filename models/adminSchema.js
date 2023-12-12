@@ -10,10 +10,10 @@ const adminSchema = new mongoose.Schema({
   password: { type: String, required: true },
 
   role:{type:String,default:"staff"},//staff and admin /user==customer
-  saree_create:{type:Boolean,default:false},
-  saree_edit:{type:Boolean,default:false},
-  saree_delete:{type:Boolean,default:false},
-  saree_view:{type:Boolean,default:false},
+  product_create:{type:Boolean,default:false},
+  product_edit:{type:Boolean,default:false},
+  product_delete:{type:Boolean,default:false},
+  product_view:{type:Boolean,default:false},
   user_view:{type:Boolean,default:false},
   user_edit:{type:Boolean,default:false},
   user_delete:{type:Boolean,default:false},

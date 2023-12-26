@@ -30,7 +30,9 @@ router.post("/api/subcategory", async (req, res) => {
   });
 router.get("/api/subcategory", async (req, res) => {
     try {
-        let query = await SubCategory.find();
+      const resa  = req.query;
+
+        let query = await SubCategory.find(resa);
 
       res.status(200).json(query);
     } catch (err) {

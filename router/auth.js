@@ -11,12 +11,8 @@ const Admin = require("../models/adminSchema");
 const {
   Authenticate,
   IsAdmin,
-  IsAdminAndUser,
-  IsAdminAndStaff,
   IsSuper,
-  IsAdmin_Product_Delete,
-  IsAdminAndUserAnd_staff_patch_true,
-
+  
 } = require("../middleware/authenticate.js");
 
 router.get("/", (req, res) => {
@@ -285,7 +281,7 @@ router.get("/auth/verify/admin", IsAdmin, (req, res) => {
 });
 
 //Only Admin Can Update
-router.patch("/auth/user/:id", IsAdminAndUserAnd_staff_patch_true, async (req, res) => {
+router.patch("/auth/user/:id", async (req, res) => {
   try {
     const userId = req.params.id;
     const { password, tokens, _id, ...data } = req.body;
@@ -378,7 +374,7 @@ console.log(data)
   }
 });
 //Get Staff By admin ANd Own User
-router.get("/auth/staff/:id",IsAdminAndStaff, async (req, res) => {
+router.get("/auth/staff/:id", async (req, res) => {
   try {
     const Id = req.params.id;
     const data = await Admin.findById(Id);

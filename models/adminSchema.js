@@ -9,19 +9,12 @@ const adminSchema = new mongoose.Schema({
   phone: { type: Number, required: true },
   password: { type: String, required: true },
 
-  role:{type:String,default:"staff"},//staff and admin /user==customer
-  product_create:{type:Boolean,default:false},
-  product_edit:{type:Boolean,default:false},
-  product_delete:{type:Boolean,default:false},
-  product_view:{type:Boolean,default:false},
-  user_view:{type:Boolean,default:false},
-  user_edit:{type:Boolean,default:false},
-  user_delete:{type:Boolean,default:false},
+  role: { type: String, default: "staff" },//staff and admin /user==customer
   tokens: [
     {
       token: {
         type: String,
-        required:true
+        required: true
       },
       expiresAt: {
         type: Date,
@@ -42,6 +35,9 @@ adminSchema.pre("save", async function (next) {
   }
   next();
 });
+
+
+
 
 //We are generating 
 // module.exports = mongoose.model("Main", userSchema);

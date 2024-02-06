@@ -3,9 +3,6 @@ var http = require('http'),
     ccav = require('./ccavutil.js'),
     qs = require('querystring');
 const cheerio = require('cheerio');
-const Cart = require("./models/userCartSchema.js");
-const Product = require('./models/productSchema.js');
-const Order = require('./models/orderSchema.js');
 const { default: axios } = require('axios');
 const User = require('./models/userSchema.js');
 // import {url,frontURL} from './url'

@@ -8,7 +8,6 @@ const adminSchema = new mongoose.Schema({
   email: { type: String, required: true },
   phone: { type: Number, required: true },
   password: { type: String, required: true },
-
   role: { type: String, default: "staff" },//staff and admin /user==customer
   tokens: [
     {

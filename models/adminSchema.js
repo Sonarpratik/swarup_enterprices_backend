@@ -9,6 +9,8 @@ const adminSchema = new mongoose.Schema({
   phone: { type: Number, required: true },
   password: { type: String, required: true },
   role: { type: String, default: "staff" },//staff and admin /user==customer
+  active:{type:Boolean,default:true},
+
   tokens: [
     {
       token: {

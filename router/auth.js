@@ -359,49 +359,15 @@ router.post("/delete", async (req, res) => {
 });
 
 //get all staff
-router.get("/auth/staff", IsSuper, async (req, res) => {
+router.get("/auth/staff", async (req, res) => {
   try {
     const data = await Admin.find();
-
-    // Calculate total pages for pagination
-
-    // Response object to include pagination info
-
-    // const data = await User.find();
-    console.log(data);
-    const newArray = data.map(
-      ({
-        _id,
-        name,
-        email,
-        phone,
-        role,
-        product_create,
-        product_edit,
-        product_delete,
-        product_view,
-        user_view,
-        user_edit,
-        user_delete,
-
-        ...rest
-      }) => ({
-        _id,
-        name,
-        email,
-        phone,
-        role,
-        product_create,
-        product_edit,
-        product_delete,
-        product_view,
-        user_view,
-        user_edit,
-        user_delete,
-      })
-    );
-
-    res.status(200).send(newArray);
+    const newData = data.map(item => {
+      // Create a copy of the item object
+      const { tokens,password,...rest} =item._doc 
+      return rest;
+  });
+    res.status(200).send(newData);
   } catch (e) {
     console.log(e);
     res.status(404).send(e);
@@ -547,7 +513,7 @@ router.get("/auth/user", async (req, res) => {
       })
     );
     const response = {
-      currentPage: page,
+      currentPage: parseInt(page),
       totalPages: totalPages,
       totalItems: totalCount,
       data: newArray,

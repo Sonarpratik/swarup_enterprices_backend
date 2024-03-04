@@ -5,17 +5,46 @@ const Admin = require("../models/adminSchema");
 const VerifyToken = (req, res) => {
  
     let authHeader = req.headers.authorization;
-
     const token = authHeader.split(" ")[1];
-    const verfiyToken = jwt.verify(token, "your_secret_key");
-    const tokenExpirationDateInSeconds = verfiyToken.exp; // Expiration time in seconds
-    const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Current time in seconds
+    if(token!==null&&token.length>0){
 
-    if (tokenExpirationDateInSeconds < currentTimeInSeconds) {
-      res.status(401).json({message:"Token has expired"})
+      const verfiyToken = jwt.verify(token, "your_secret_key");
+      const tokenExpirationDateInSeconds = verfiyToken.exp; // Expiration time in seconds
+      const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Current time in seconds
+      
+      if (tokenExpirationDateInSeconds < currentTimeInSeconds) {
+        res.status(401).json({message:"Token has expired"})
+      }
+      return { verfiyToken, token };
+    }else{
+      res.status(401).json({message:"Please Send Token"})
+
     }
-    return { verfiyToken, token };
 
+};
+
+const VerifyToken2 = (req, res) => {
+  let authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: "Please send a valid token in the Authorization header" });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+      const verifiedToken = jwt.verify(token, "your_secret_key");
+      const tokenExpirationDateInSeconds = verifiedToken.exp;
+      const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+
+      if (tokenExpirationDateInSeconds < currentTimeInSeconds) {
+          return res.status(401).json({ message: "Token has expired" });
+      }
+
+      return { verifiedToken, token };
+  } catch (error) {
+      return res.status(401).json({ message: "Invalid token", error: error.message });
+  }
 };
 
 // Verify the token is real or not
@@ -45,7 +74,6 @@ const Authenticate = async (req, res, next) => {
       }
     }
     } catch (err) {
-      console.log(err);
       res.status(401).json({message:"UnAuthorised"});
   }
 };
@@ -76,7 +104,6 @@ const IsSuper = async (req, res, next) => {
       res.status(401).json({message:"Unauthorized"});
     }
   } catch (err) {
-    console.log(err);
     res.status(401).send("Admin Unauthorized");
   }
 };

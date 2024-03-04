@@ -28,20 +28,29 @@ const productSchema = new mongoose.Schema({
   color: [{ type: String }],
   wheels: { type: Boolean, default: false },
   special: { type: Boolean, default: false },
-  base: { type: String },
-  back: { type: String },
-  seat: { type: String },
-  mech: { type: String },
-  gaslift: { type: String },
-  center_beam: { type: String },
+
 
   image: { type: String },
   multi_img: [{ type: String }],
+  seoArray: [{ type: String }],
+  suitableFor: { type: String },
+  
 
-  material: { type: String },
+  chair: {
+    material: { type: String },
+    cover: { type: String },
+    backCushion: { type: String },
+    armRest: { type: String },
+    base: { type: String },
+    mech: { type: String },
+    gaslift: { type: String },
+    maxLoad: { type: String },
+  centerBeam: { type: String },
+
+  },
   size: {
-    total_height: { type: Number },
-    seat_height: { type: Number },
+    totalHeight: { type: Number },
+    seatHeight: { type: Number },
     length: { type: Number },
     width: { type: Number },
     unit: { type: String },
@@ -51,7 +60,7 @@ const productSchema = new mongoose.Schema({
   stage: { type: String },
   price: { type: Number, required: true },
   discount: { type: Number, default: 0 },
-  more_features: [
+  moreFeatures: [
     {
       title: { type: String },
       description: { type: String },

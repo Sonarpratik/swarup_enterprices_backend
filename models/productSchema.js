@@ -28,6 +28,8 @@ const productSchema = new mongoose.Schema({
   color: [{ type: String }],
   wheels: { type: Boolean, default: false },
   special: { type: Boolean, default: false },
+  instock: { type: Boolean, default: true },
+  active: { type: Boolean, default: true },
 
 
   image: { type: String },

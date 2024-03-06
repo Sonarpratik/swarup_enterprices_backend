@@ -92,6 +92,8 @@ router.post("/api/product", async (req, res) => {
     res.status(201).json(product);
   } catch (err) {
     console.log(err);
+    res.status(404).send("You Dont Hvae the clearnce");
+
   }
 });
 

@@ -74,6 +74,7 @@ const Authenticate = async (req, res, next) => {
       }
     }
     } catch (err) {
+      console.log(err)
       res.status(401).json({message:"UnAuthorised"});
   }
 };
@@ -107,7 +108,48 @@ const IsSuper = async (req, res, next) => {
     res.status(401).send("Admin Unauthorized");
   }
 };
+const IsAdminAndUser = async (req, res, next) => {
+  try {
+    const { verfiyToken, token } = VerifyToken(req, res);
 
+    const userId = req.params.id;
+    const rootUser = await User.findOne({
+      _id: verfiyToken.userId,
+      "tokens.token": token,
+    });
+    const admin = await Admin.findOne({
+      _id: verfiyToken.userId,
+      "tokens.token": token,
+    });
+
+    if (!rootUser) {
+      if (admin) {
+        const { _id, role, ...data } = admin;
+        if (role === "admin") {
+          next();
+        } else {
+          res.status(401).json({message:"Unauthorized"});
+        }
+      } else {
+        // res.status(401).json({message:"Unauthorized"});
+        throw new Error("User not found");
+      }
+    } else {
+      req.token = token;
+      const { _id, ...data } = rootUser;
+      const getid = rootUser._id.toString();
+      if (userId === getid) {
+        next();
+      } else {
+        
+        res.status(401).json({message:"Unauthorized"});
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(401).json({ error: "Wrong Token" });
+  }
+};
 // Admin Clearance
 const IsAdmin = async (req, res, next) => {
   try {
@@ -146,5 +188,5 @@ module.exports = {
   Authenticate,
   IsAdmin,
   IsSuper,
-  
+  IsAdminAndUser
 };

@@ -12,6 +12,7 @@ const {
   Authenticate,
   IsAdmin,
   IsSuper,
+  IsAdminAndUser,
 } = require("../middleware/authenticate.js");
 
 router.get("/", (req, res) => {
@@ -247,38 +248,13 @@ router.post("/auth/admin/login", async (req, res) => {
 //universal verify
 router.get("/auth/verify", Authenticate, (req, res) => {
   const {
-    _id,
-    name,
-    email,
-    billing_address,
-    shipping_address,
-    billing_zip,
-    shipping_zip,
-    billing_phone,
-    shipping_phone,
-    billing_state,
-    billing_city,
-    shipping_state,
-    shipping_city,
+    tokens,
+    password,
+    active,
     ...data
-  } = req.rootUser;
-  res
-    .status(200)
-    .send({
-      _id,
-      name,
-      email,
-      billing_address,
-      shipping_address,
-      billing_zip,
-      shipping_zip,
-      billing_phone,
-      shipping_phone,
-      billing_state,
-      billing_city,
-      shipping_state,
-      shipping_city,
-    });
+  } = req.rootUser._doc;
+
+  res.status(200).send(data);
 });
 
 //Only ADMIN AND STAFF
@@ -310,26 +286,17 @@ router.get("/auth/verify/admin", IsSuper, (req, res) => {
 });
 
 //Only Admin Can Update
-router.patch("/auth/user/:id", async (req, res) => {
+router.patch("/auth/user/:id", IsAdminAndUser, async (req, res) => {
   try {
     const userId = req.params.id;
-    const { password, tokens, _id, ...data } = req.body;
+    const { _id, ...data } = req.body;
     console.log(req.body);
     const did = await User.findByIdAndUpdate({ _id: userId }, data, {
       new: true,
     });
 
-    const {
-      name,
-      email,
-      billing_address,
-      shipping_address,
-      active,
-      ...extra
-    } = did;
-    res
-      .status(200)
-      .send({ _id, name, email, billing_address, shipping_address, active });
+    const { password, token, active, ...extra } = did._doc;
+    res.status(200).send(extra);
   } catch (e) {
     console.log(e);
     res.status(404).send("You Dont Hvae the clearnce");
@@ -362,11 +329,11 @@ router.post("/delete", async (req, res) => {
 router.get("/auth/staff", async (req, res) => {
   try {
     const data = await Admin.find();
-    const newData = data.map(item => {
+    const newData = data.map((item) => {
       // Create a copy of the item object
-      const { tokens,password,...rest} =item._doc 
+      const { tokens, password, ...rest } = item._doc;
       return rest;
-  });
+    });
     res.status(200).send(newData);
   } catch (e) {
     console.log(e);
@@ -452,22 +419,20 @@ router.patch("/auth/staff/:id", IsSuper, async (req, res) => {
       user_delete,
       ...p
     } = did;
-    res
-      .status(200)
-      .send({
-        _id,
-        name,
-        email,
-        phone,
-        role,
-        product_create,
-        product_edit,
-        product_delete,
-        product_view,
-        user_view,
-        user_edit,
-        user_delete,
-      });
+    res.status(200).send({
+      _id,
+      name,
+      email,
+      phone,
+      role,
+      product_create,
+      product_edit,
+      product_delete,
+      product_view,
+      user_view,
+      user_edit,
+      user_delete,
+    });
   } catch (e) {
     console.log(e);
     res.status(404).send("You Dont Hvae the clearnce");

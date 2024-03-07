@@ -16,6 +16,7 @@ const {
   IsSuper,
   IsAdminAndUser,
 } = require("../middleware/authenticate.js");
+const { restoreCartAndCancel } = require("./helperFunctions/helper.js");
 
 router.get("/api/cart/:id", IsAdminAndUser, async (req, res) => {
   try {
@@ -30,8 +31,6 @@ router.get("/api/cart/:id", IsAdminAndUser, async (req, res) => {
     const cartWithProductDetails = cart.map(cartItem => {
         // Find the corresponding product details for the current cart item
         const productDetail = products.find(product => product._id.toString() === cartItem.product_id.toString());
-      
-        // Return a new object containing both cart item and product details
         return {
           ...cartItem.toObject(), // Convert Mongoose document to plain JavaScript object
           product: productDetail // Nest product details inside the cart item
@@ -103,5 +102,7 @@ router.post("/api/cart", Authenticate, async (req, res) => {
     res.status(404).send({ message: "Something Went Wrong" });
   }
 });
+
+
 
 module.exports = router;

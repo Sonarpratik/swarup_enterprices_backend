@@ -34,10 +34,22 @@ router.get("/api/order", async (req, res) => {
     const order = await Order.find();
     console.log("order", order);
     // Fetch products based on product IDs
+    const productIds = order.map((item) => item.product_id);
 
+    // Fetch products based on product IDs
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    const cartWithProductDetails = order.map(cartItem => {
+        // Find the corresponding product details for the current cart item
+        const productDetail = products.find(product => product._id.toString() === cartItem.product_id.toString());
+        return {
+          ...cartItem.toObject(), // Convert Mongoose document to plain JavaScript object
+          product: productDetail // Nest product details inside the cart item
+        };
+      });
     const transformedArray = [];
 
-    order.forEach((item) => {
+    cartWithProductDetails.forEach((item) => {
       const existingOrderIndex = transformedArray.findIndex(
         (order) => order.order_id === item.order_id
       );
@@ -49,16 +61,20 @@ router.get("/api/order", async (req, res) => {
           count_of_products: 1,
           created_at: item.created_at,
           payment: item.payment,
+          billing: item?.billing,
+          shipping: item?.shipping,
+          payment:item?.payment,
+
           product: [
             {
               product_id: item.product_id,
+              product: item.product,
               color: item.color,
               quantity: item.quantity,
               //   product:item.product
               price: item?.price,
               discount: item?.discount,
-              billing: item?.billing,
-              shipping: item?.shipping,
+             
             },
           ],
         });
@@ -68,11 +84,12 @@ router.get("/api/order", async (req, res) => {
           product_id: item.product_id,
           color: item.color,
           quantity: item.quantity,
+          product: item.product,
+
           // product:item.product
           price: item?.price,
           discount: item?.discount,
-          billing: item?.billing,
-          shipping: item?.shipping,
+    
         });
       }
     });
@@ -86,13 +103,25 @@ router.get("/api/order/:id", IsAdminAndUser, async (req, res) => {
   try {
     const userId = req.params.id;
 
-    const order = await Order.find({ user_id: userId });
+    const order = await Order.find({ user_id: userId ,active:true});
     console.log("order", order);
     // Fetch products based on product IDs
+    const productIds = order.map((item) => item.product_id);
 
+    // Fetch products based on product IDs
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    const cartWithProductDetails = order.map(cartItem => {
+        // Find the corresponding product details for the current cart item
+        const productDetail = products.find(product => product._id.toString() === cartItem.product_id.toString());
+        return {
+          ...cartItem.toObject(), // Convert Mongoose document to plain JavaScript object
+          product: productDetail // Nest product details inside the cart item
+        };
+      });
     const transformedArray = [];
 
-    order.forEach((item) => {
+    cartWithProductDetails.forEach((item) => {
       const existingOrderIndex = transformedArray.findIndex(
         (order) => order.order_id === item.order_id
       );
@@ -103,16 +132,20 @@ router.get("/api/order/:id", IsAdminAndUser, async (req, res) => {
           count_of_products: 1,
           created_at: item.created_at,
           payment: item.payment,
+          billing: item?.billing,
+          shipping: item?.shipping,
+          payment:item?.payment,
           product: [
             {
               product_id: item.product_id,
+              product: item.product,
+
               color: item.color,
               quantity: item.quantity,
               //   product:item.product
               price: item?.price,
               discount: item?.discount,
-              billing: item?.billing,
-              shipping: item?.shipping,
+      
             },
           ],
         });
@@ -120,13 +153,14 @@ router.get("/api/order/:id", IsAdminAndUser, async (req, res) => {
         transformedArray[existingOrderIndex].count_of_products++;
         transformedArray[existingOrderIndex].product.push({
           product_id: item.product_id,
+          product: item.product,
+
           color: item.color,
           quantity: item.quantity,
           // product:item.product
           price: item?.price,
           discount: item?.discount,
-          billing: item?.billing,
-          shipping: item?.shipping,
+
         });
       }
     });
@@ -136,6 +170,8 @@ router.get("/api/order/:id", IsAdminAndUser, async (req, res) => {
     res.status(404).send({ message: "Something Went Wrong" });
   }
 });
+
+
 router.post("/api/order/cancel", Authenticate, async (req, res) => {
   try {
     const orders = await cancelOrder(req.body.order_id);
@@ -143,6 +179,21 @@ router.post("/api/order/cancel", Authenticate, async (req, res) => {
     // Fetch products based on product IDs
 
     res.status(200).send(orders);
+  } catch (err) {
+    console.log(err);
+    res.status(404).send({ message: "Something Went Wrong" });
+  }
+});
+router.delete("/api/order/user/:id", Authenticate, async (req, res) => {
+  try {
+    const order_id = req.params.id;
+
+    const newOrder= await Order.updateMany({ order_id: order_id }, { active: false });
+
+
+    // Fetch products based on product IDs
+
+    res.status(200).send(newOrder);
   } catch (err) {
     console.log(err);
     res.status(404).send({ message: "Something Went Wrong" });

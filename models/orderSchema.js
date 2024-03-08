@@ -1,11 +1,14 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-//Pending Success Failed
+//Pending Success Failed Cancelled
+//Shipping Soon  Shipped  Out for Delivery   Delivered
 const orderSchema = new mongoose.Schema({
   user_id: { type: String, required: true },
   order_id: { type: String, required: true },
   payment:{type:String,default:"Pending"},
+
+  stage:{type:String,default:"Shipping Soon"},
 
   product_id: { type: String, required: true },
   active: { type: Boolean, default: true },

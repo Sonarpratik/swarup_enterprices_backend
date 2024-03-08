@@ -25,14 +25,26 @@ const {
   cancelOrder,
   failOrder,
   successOrder,
+  updateState,
 } = require("./helperFunctions/helper.js");
 
 router.get("/api/order", async (req, res) => {
   try {
     // const userId = req.params.id;
+    const {  sort, ...resa } = req.query;
 
-    const order = await Order.find();
-    console.log("order", order);
+    const page = parseInt(req.query.page);
+    const limit = req.query.limit;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    console.log(startIndex)
+
+    // Fetch data with pagination using skip() and limit()
+    const order = await Order.find(resa).sort({ created_at: sort })
+    // const order = await Order.find();
+
+    // Calculate total pages for pagination
+
     // Fetch products based on product IDs
     const productIds = order.map((item) => item.product_id);
 
@@ -64,6 +76,8 @@ router.get("/api/order", async (req, res) => {
           billing: item?.billing,
           shipping: item?.shipping,
           payment:item?.payment,
+          stage:item?.stage,
+          active:item?.active,
 
           product: [
             {
@@ -93,7 +107,17 @@ router.get("/api/order", async (req, res) => {
         });
       }
     });
-    res.status(200).send(transformedArray);
+const a=transformedArray.slice(startIndex, parseInt(startIndex) + parseInt(limit));
+
+const totalPages = Math.ceil(transformedArray?.length / limit);
+console.log(startIndex, parseInt(startIndex) + parseInt(limit))
+    const response = {
+      currentPage: parseInt(page),
+      totalPages: totalPages,
+      totalItems: transformedArray?.length,
+      data: a,
+    };
+    res.status(200).send(response);
   } catch (err) {
     console.log(err);
     res.status(404).send({ message: "Something Went Wrong" });
@@ -104,7 +128,6 @@ router.get("/api/order/:id", IsAdminAndUser, async (req, res) => {
     const userId = req.params.id;
 
     const order = await Order.find({ user_id: userId ,active:true});
-    console.log("order", order);
     // Fetch products based on product IDs
     const productIds = order.map((item) => item.product_id);
 
@@ -135,6 +158,7 @@ router.get("/api/order/:id", IsAdminAndUser, async (req, res) => {
           billing: item?.billing,
           shipping: item?.shipping,
           payment:item?.payment,
+          stage:item?.stage,
           product: [
             {
               product_id: item.product_id,
@@ -220,6 +244,19 @@ router.post("/api/order/success", Authenticate, async (req, res) => {
     if (orders?.items[0]?.status === "captured") {
       await Cart.deleteMany({ user_id: _id });
     }
+    res.status(200).send(orders);
+  } catch (err) {
+    console.log(err);
+    res.status(404).send({ message: "Something Went Wrong" });
+  }
+});
+router.patch("/api/order/stage/:id", IsAdmin, async (req, res) => {
+  try {
+    const orders = await updateState(req.body.order_id,req.body.stage);
+
+    // Fetch products based on product IDs
+
+ 
     res.status(200).send(orders);
   } catch (err) {
     console.log(err);

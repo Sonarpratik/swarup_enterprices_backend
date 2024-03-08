@@ -11,6 +11,7 @@ const orderSchema = new mongoose.Schema({
   stage:{type:String,default:"Shipping Soon"},
 
   product_id: { type: String, required: true },
+  order_details: { type: String },
   active: { type: Boolean, default: true },
 
   price: { type: Number, required: true ,set: v => Math.ceil(v),},

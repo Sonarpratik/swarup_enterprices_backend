@@ -102,5 +102,16 @@ return data;
     return null;
   }
 };
+const updateState = async (order_id,stage) => {
+  try {
 
-module.exports = { getCart, createOrder, emptyCart, cancelOrder, failOrder,successOrder };
+  const data= await Order.updateMany({ order_id: order_id }, { stage: stage });
+
+
+return data;
+  } catch (err) {
+    return null;
+  }
+};
+
+module.exports = { getCart, createOrder, emptyCart, cancelOrder, failOrder,successOrder,updateState };

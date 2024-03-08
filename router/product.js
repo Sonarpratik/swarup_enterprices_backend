@@ -17,6 +17,7 @@ const {
 
 router.get("/api/product", async (req, res) => {
   try {
+
     const page = req.query.page;
     const limit = req.query.limit;
     const startIndex = (page - 1) * limit;

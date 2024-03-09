@@ -27,7 +27,7 @@ const razorpayInstance = new Razorpay({
 router.post("/v1/payment", Authenticate, async (req, res) => {
   try {
     const { _id, tokens, password, active,billing,shipping, ...data } = req.rootUser._doc;
-    const amount = 10000;
+    const amount = req.body.amount*100;
     const options = {
       amount: amount,
       currency: "INR",
@@ -43,10 +43,10 @@ router.post("/v1/payment", Authenticate, async (req, res) => {
           amount: amount,
           key_id: RAZORPAY_ID_KEY,
           product_name: "prateek",
-          description: "des",
-          contact: "8567345632",
-          name: "Sandeep Sharma",
-          email: "sandeep@gmail.com",
+          description: req.body.description,
+          contact: req.body.phone,
+          name: req.body.name,
+          email: req.body.email,
         });
 
         const cart = await getCart(_id);

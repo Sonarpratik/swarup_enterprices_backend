@@ -16,8 +16,8 @@ const {
   IsSuper,
   IsAdminAndUser,
 } = require("../middleware/authenticate.js");
-const Razorpay = require("razorpay");
 const { getCart, createOrder,emptyCart } = require("./helperFunctions/helper.js");
+const Razorpay = require("razorpay");
 
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
 const razorpayInstance = new Razorpay({

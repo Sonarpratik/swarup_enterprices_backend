@@ -14,10 +14,45 @@ const {
   IsAdmin,
   IsSuper,
 } = require("../middleware/authenticate.js");
+const { getProduct } = require("./helperFunctions/productHelper.js");
 
 router.get("/api/product", async (req, res) => {
   try {
+    const page = req.query.page;
+    const limit = req.query.limit;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const totalCount = await Product.countDocuments({ active: true }).distinct(
+      "name"
+    );
+    // db.foo.aggregate({ $group: { _id: '$age', name: { $max: '$name' } } }).result
+    // Fetch data with pagination using skip() and limit()
+    const data = await Product.find({ active: true })
+      .skip(startIndex)
+      .limit(limit);
 
+    // Calculate total pages for pagination
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Response object to include pagination info
+
+    // const data = await User.find();
+
+    const response = {
+      currentPage: parseInt(page),
+      totalPages: totalPages,
+      totalItems: totalCount,
+      data: data,
+    };
+
+    res.status(200).send(response);
+  } catch (e) {
+    console.log(e);
+    res.status(404).send(e);
+  }
+});
+router.get("/api/admin-product", async (req, res) => {
+  try {
     const page = req.query.page;
     const limit = req.query.limit;
     const startIndex = (page - 1) * limit;
@@ -52,6 +87,32 @@ router.get("/api/product/:id", async (req, res) => {
     const userId = req.params.id;
 
     const data = await Product.findById(userId);
+    const products = await Product.find({ name: data.name });
+    const result = getProduct(data, products);
+
+    res.status(200).send(result);
+  } catch (e) {
+    console.log(e);
+    res.status(404).send(e);
+  }
+});
+router.get("/api/admin-product/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const data = await Product.findById(userId);
+
+    res.status(200).send(data);
+  } catch (e) {
+    console.log(e);
+    res.status(404).send(e);
+  }
+});
+router.get("/api/related-product/:name", async (req, res) => {
+  try {
+    const userId = req.params.name;
+
+    const data = await Product.find({ name: userId, active: true });
 
     res.status(200).send(data);
   } catch (e) {
@@ -94,7 +155,6 @@ router.post("/api/product", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(404).send("You Dont Hvae the clearnce");
-
   }
 });
 

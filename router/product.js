@@ -15,6 +15,7 @@ const {
   IsSuper,
 } = require("../middleware/authenticate.js");
 const { getProduct } = require("./helperFunctions/productHelper.js");
+const { a } = require("./helperFunctions/test.js");
 
 router.get("/api/product", async (req, res) => {
   try {
@@ -22,9 +23,7 @@ router.get("/api/product", async (req, res) => {
     const limit = req.query.limit;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const totalCount = await Product.countDocuments({ active: true }).distinct(
-      "name"
-    );
+    const totalCount = await Product.countDocuments({ active: true })
     // db.foo.aggregate({ $group: { _id: '$age', name: { $max: '$name' } } }).result
     // Fetch data with pagination using skip() and limit()
     const data = await Product.find({ active: true })
@@ -111,10 +110,12 @@ router.get("/api/admin-product/:id", async (req, res) => {
 router.get("/api/related-product/:name", async (req, res) => {
   try {
     const userId = req.params.name;
-
-    const data = await Product.find({ name: userId, active: true });
-
-    res.status(200).send(data);
+    const originalProduct = await Product.findOne({ _id: userId});
+    const data = await Product.find({ name: originalProduct.name, active: true });
+const newData=data.filter((item)=>(item._id).toString()!==(originalProduct._id).toString())
+console.log(newData)
+console.log(originalProduct._id)
+    res.status(200).send(newData);
   } catch (e) {
     console.log(e);
     res.status(404).send(e);

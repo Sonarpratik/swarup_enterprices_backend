@@ -32,21 +32,22 @@ router.post("/review", async (req, res) => {
 //Get All Review For Given Id
 router.get("/review", async (req, res) => {
   try {
-const { page, limit, ...resa } = req.query;
+const { page, limit,sort, ...resa } = req.query;
 
 const startIndex = (page - 1) * limit;
 const endIndex = page * limit;
 const totalCount = await Review.countDocuments(resa);
 
-let query = Review.find(resa);
+let query = await Review.find(resa).sort({ date: sort });
 
 
 
-const data = await query.skip(startIndex).limit(limit);
+// const data = await query.skip(startIndex).limit(limit);
+
 // Calculate total pages for pagination
 const totalPages = Math.ceil(totalCount / limit);
 // const product = await Product.find();
-const user = await User.find({ _id: { $in: data.map(item=>item.user_id) } });
+const user = await User.find({ _id: { $in: query.map(item=>item.user_id) } });
 const cleanUsers = user.map(user => {
   const { tokens,user_id, __v, ...userData } = user._doc;
   return userData;
@@ -64,14 +65,13 @@ cleanUsers.forEach(user => {
 
 
 // Replace user_id with corresponding user object
-const modifiedReviews = data.map(review => ({
+const modifiedReviews = query.map(review => ({
   _id: review._id,
   user: userMap[review.user_id],
   product_id: review.product_id,
   rating: review.rating,
   description: review.description,
-  date:review.date,
-  __v: review.__v
+  date:review.date
 }));
 
 const response = {
@@ -81,7 +81,7 @@ const response = {
   data: modifiedReviews,
 };
 
-res.status(200).json(response);
+res.status(200).json(modifiedReviews);
 
   } catch (err) {
     console.log(err);

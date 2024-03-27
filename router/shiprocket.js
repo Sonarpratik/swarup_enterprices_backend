@@ -14,12 +14,14 @@ const {
   IsAdmin_Product_Delete,
 } = require("../middleware/authenticate.js");
 const Review = require("../models/reviewSchema");
+const { updateStateFromWebHook } = require("./helperFunctions/helper.js");
 
 //Create Review
 router.post("/api/v1/delivery-notifications", async (req, res) => {
     try {
       console.log(req.body); // Log request body
       // Process request and send response
+      const data=await updateStateFromWebHook(req.body.channel_order_id,req.body)
       res.sendStatus(200);
     } catch (err) {
       console.error(err); // Log error

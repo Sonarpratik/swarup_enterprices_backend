@@ -77,6 +77,10 @@ router.get("/api/order", async (req, res) => {
           shipping: item?.shipping,
           payment:item?.payment,
           stage:item?.stage,
+          length:item?.length,
+          breadth:item?.breadth,
+          height:item?.height,
+          weight:item?.weight,
           active:item?.active,
 
           product: [
@@ -159,6 +163,10 @@ router.get("/api/order/:id", IsAdminAndUser, async (req, res) => {
           shipping: item?.shipping,
           payment:item?.payment,
           stage:item?.stage,
+          length:item?.length,
+          breadth:item?.breadth,
+          height:item?.height,
+          weight:item?.weight,
           product: [
             {
               product_id: item.product_id,
@@ -252,11 +260,11 @@ router.post("/api/order/success", Authenticate, async (req, res) => {
 });
 router.patch("/api/order/stage/:id", IsAdmin, async (req, res) => {
   try {
-    const orders = await updateState(req.body.order_id,req.body.stage);
+    const orders = await updateState(req.body.order_id,req.body);
 
     // Fetch products based on product IDs
 
- 
+ console.log("orders",orders)
     res.status(200).send(orders);
   } catch (err) {
     console.log(err);

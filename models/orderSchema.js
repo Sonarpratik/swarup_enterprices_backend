@@ -7,8 +7,13 @@ const orderSchema = new mongoose.Schema({
   user_id: { type: String, required: true },
   order_id: { type: String, required: true },
   payment:{type:String,default:"Pending"},
+ 
+  length: { type: Number },
+  breadth: { type: Number },
+  height: { type: Number },
+  weight: { type: Number },
 
-  stage:{type:String,default:"Shipping Soon"},
+  stage:{type:String,default:"Pending"},
 
   product_id: { type: String, required: true },
   order_details: { type: String },

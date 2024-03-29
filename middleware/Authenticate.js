@@ -4,22 +4,22 @@ const Admin = require("../models/adminSchema");
 
 const VerifyToken = (req, res) => {
  
-    let authHeader = req.headers.authorization;
-    const token = authHeader.split(" ")[1];
-    if(token!==null&&token.length>0){
+  let authHeader = req.headers.authorization;
+  const token = authHeader.split(" ")[1];
+  if(token!==null&&token.length>0){
 
-      const verfiyToken = jwt.verify(token, "your_secret_key");
-      const tokenExpirationDateInSeconds = verfiyToken.exp; // Expiration time in seconds
-      const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Current time in seconds
-      
-      if (tokenExpirationDateInSeconds < currentTimeInSeconds) {
-        res.status(401).json({message:"Token has expired"})
-      }
-      return { verfiyToken, token };
-    }else{
-      res.status(401).json({message:"Please Send Token"})
-
+    const verfiyToken = jwt.verify(token, "your_secret_key");
+    const tokenExpirationDateInSeconds = verfiyToken.exp; // Expiration time in seconds
+    const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Current time in seconds
+    
+    if (tokenExpirationDateInSeconds < currentTimeInSeconds) {
+      res.status(401).json({message:"Token has expired"})
     }
+    return { verfiyToken, token };
+  }else{
+    res.status(401).json({message:"Please Send Token"})
+
+  }
 
 };
 
@@ -75,7 +75,7 @@ const Authenticate = async (req, res, next) => {
     }
     } catch (err) {
       console.log(err)
-      res.status(401).json({message:"UnAuthorised"});
+      res.status(401).json({message:"UnAuthoriseds"});
   }
 };
 

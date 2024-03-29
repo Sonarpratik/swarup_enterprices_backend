@@ -19,14 +19,25 @@ const { a } = require("./helperFunctions/test.js");
 
 router.get("/api/product", async (req, res) => {
   try {
-    const page = req.query.page;
-    const limit = req.query.limit;
+    const { page, limit, product_name,sort,max_price,min_price,min_discount,max_discount, ...resa } = req.query;
+    if (product_name) {
+      resa.product_name = { $regex: product_name };
+    }
+    if (min_price && max_price) {
+      resa.product_price = { $gte: parseInt(min_price), $lte: parseInt(max_price) };
+    }
+    if (min_discount && max_discount) {
+      resa.product_discount = { $gte: parseInt(min_discount), $lte: parseInt(max_discount) };
+    }
+
+resa.active=true
+
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const totalCount = await Product.countDocuments({ active: true })
+    const totalCount = await Product.countDocuments(resa)
     // db.foo.aggregate({ $group: { _id: '$age', name: { $max: '$name' } } }).result
     // Fetch data with pagination using skip() and limit()
-    const data = await Product.find({ active: true })
+    const data = await Product.find(resa)
       .skip(startIndex)
       .limit(limit);
 

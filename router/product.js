@@ -19,27 +19,45 @@ const { a } = require("./helperFunctions/test.js");
 
 router.get("/api/product", async (req, res) => {
   try {
-    const { page, limit, product_name,sort,max_price,min_price,min_discount,max_discount, ...resa } = req.query;
+    const {
+      page,
+      limit,
+      product_name,
+      sort,
+      max_price,
+      min_price,
+      min_discount,
+      max_discount,
+      other,
+      ...resa
+    } = req.query;
+    if(other){
+      console.log("lion",other)
+    }
     if (product_name) {
       resa.product_name = { $regex: product_name };
     }
     if (min_price && max_price) {
-      resa.product_price = { $gte: parseInt(min_price), $lte: parseInt(max_price) };
+      resa.product_price = {
+        $gte: parseInt(min_price),
+        $lte: parseInt(max_price),
+      };
     }
     if (min_discount && max_discount) {
-      resa.product_discount = { $gte: parseInt(min_discount), $lte: parseInt(max_discount) };
+      resa.product_discount = {
+        $gte: parseInt(min_discount),
+        $lte: parseInt(max_discount),
+      };
     }
 
-resa.active=true
+    resa.active = true;
 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const totalCount = await Product.countDocuments(resa)
+    const totalCount = await Product.countDocuments(resa);
     // db.foo.aggregate({ $group: { _id: '$age', name: { $max: '$name' } } }).result
     // Fetch data with pagination using skip() and limit()
-    const data = await Product.find(resa)
-      .skip(startIndex)
-      .limit(limit);
+    const data = await Product.find(resa).skip(startIndex).limit(limit);
 
     // Calculate total pages for pagination
     const totalPages = Math.ceil(totalCount / limit);
@@ -56,6 +74,60 @@ resa.active=true
     };
 
     res.status(200).send(response);
+  } catch (e) {
+    console.log(e);
+    res.status(404).send(e);
+  }
+});
+router.get("/api/product/trending", async (req, res) => {
+  try {
+    const {
+      page,
+      limit,
+      product_name,
+      sort,
+      max_price,
+      min_price,
+      min_discount,
+      max_discount,
+      other,
+      ...resa
+    } = req.query;
+    if(other){
+      console.log("lion",other)
+    }
+    if (product_name) {
+      resa.product_name = { $regex: product_name };
+    }
+    if (min_price && max_price) {
+      resa.product_price = {
+        $gte: parseInt(min_price),
+        $lte: parseInt(max_price),
+      };
+    }
+    if (min_discount && max_discount) {
+      resa.product_discount = {
+        $gte: parseInt(min_discount),
+        $lte: parseInt(max_discount),
+      };
+    }
+
+    resa.active = true;
+    resa.trending = true;
+
+    // db.foo.aggregate({ $group: { _id: '$age', name: { $max: '$name' } } }).result
+    // Fetch data with pagination using skip() and limit()
+    const data = await Product.find(resa);
+
+    // Calculate total pages for pagination
+
+    // Response object to include pagination info
+
+    // const data = await User.find();
+
+
+
+    res.status(200).send(data);
   } catch (e) {
     console.log(e);
     res.status(404).send(e);
@@ -121,11 +193,16 @@ router.get("/api/admin-product/:id", async (req, res) => {
 router.get("/api/related-product/:name", async (req, res) => {
   try {
     const userId = req.params.name;
-    const originalProduct = await Product.findOne({ _id: userId});
-    const data = await Product.find({ name: originalProduct.name, active: true });
-const newData=data.filter((item)=>(item._id).toString()!==(originalProduct._id).toString())
-console.log(newData)
-console.log(originalProduct._id)
+    const originalProduct = await Product.findOne({ _id: userId });
+    const data = await Product.find({
+      name: originalProduct.name,
+      active: true,
+    });
+    const newData = data.filter(
+      (item) => item._id.toString() !== originalProduct._id.toString()
+    );
+    console.log(newData);
+    console.log(originalProduct._id);
     res.status(200).send(newData);
   } catch (e) {
     console.log(e);

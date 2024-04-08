@@ -182,7 +182,9 @@ const getProductFromOrderId = async (order_id) => {
   }
 };
 
-const createShipRocketOrder = async (our_order) => {
+// const token =
+  // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQ1MDM2NzYsInNvdXJjZSI6InNyLWF1dGgtaW50IiwiZXhwIjoxNzEzNDYyNDIwLCJqdGkiOiJkc0VCa2tsQ1Z6OXJXVWU1IiwiaWF0IjoxNzEyNTk4NDIwLCJpc3MiOiJodHRwczovL3NyLWF1dGguc2hpcHJvY2tldC5pbi9hdXRob3JpemUvdXNlciIsIm5iZiI6MTcxMjU5ODQyMCwiY2lkIjo0MjU5NDU4LCJ0YyI6MzYwLCJ2ZXJib3NlIjpmYWxzZSwidmVuZG9yX2lkIjowLCJ2ZW5kb3JfY29kZSI6IiJ9.WNIBZef1npVB1p-FZ_QGXN_uhYnvo20g1xOMq1GgKV4";
+const createShipRocketOrder = async (our_order,token) => {
   try {
     var axios = require("axios");
 
@@ -193,17 +195,26 @@ const createShipRocketOrder = async (our_order) => {
         our_order?.billing?.city === our_order?.shipping?.city &&
         our_order?.billing?.pincode === our_order?.shipping?.pincode &&
         our_order?.billing?.state === our_order?.shipping?.state;
-        const inputDate = "2024-03-09T09:30:47.920Z";
+      const inputDate = "2024-03-09T09:30:47.920Z";
 
-// Parse the input date string
+      // Parse the input date string
 
-// Adjust the time zone offset for IST (UTC+5:30)
-const indianDate = new Date(new Date(our_order?.created_at).getTime() + (5.5 * 60 * 60 * 1000));
+      // Adjust the time zone offset for IST (UTC+5:30)
+      const indianDate = new Date(
+        new Date(our_order?.created_at).getTime() + 5.5 * 60 * 60 * 1000
+      );
 
-// Format the date as desired
-const formattedDate = `${indianDate.getFullYear()}-${String(indianDate.getMonth() + 1).padStart(2, '0')}-${String(indianDate.getDate()).padStart(2, '0')} ${String(indianDate.getHours()).padStart(2, '0')}:${String(indianDate.getMinutes()).padStart(2, '0')}`;
-      
-const convertedOrder = {
+      // Format the date as desired
+      const formattedDate = `${indianDate.getFullYear()}-${String(
+        indianDate.getMonth() + 1
+      ).padStart(2, "0")}-${String(indianDate.getDate()).padStart(
+        2,
+        "0"
+      )} ${String(indianDate.getHours()).padStart(2, "0")}:${String(
+        indianDate.getMinutes()
+      ).padStart(2, "0")}`;
+
+      const convertedOrder = {
         order_id: our_order?.order_id,
         order_date: formattedDate,
         pickup_location: "Prateek",
@@ -232,7 +243,7 @@ const convertedOrder = {
         shipping_phone: our_order?.shipping?.phone.toString(),
         order_items: our_order?.product?.map((item) => ({
           name: item.product.name,
-          sku: item.product.name + our_order?.color,
+          sku: item.product.name + item?.color,
           units: item.quantity,
           selling_price: item.price.toString(),
           discount: item.discount.toString(),
@@ -259,7 +270,7 @@ const convertedOrder = {
 
       const headers = {
         "Content-Type": "application/json",
-        Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwaXYyLnNoaXByb2NrZXQuaW4vdjEvZXh0ZXJuYWwvYXV0aC9sb2dpbiIsImlhdCI6MTcxMTUxNzk2NywiZXhwIjoxNzEyMzgxOTY3LCJuYmYiOjE3MTE1MTc5NjcsImp0aSI6IkZMQnZ2dzZxcmpFODJNUTMiLCJzdWIiOjQ1MDM2NzYsInBydiI6IjA1YmI2NjBmNjdjYWM3NDVmN2IzZGExZWVmMTk3MTk1YTIxMWU2ZDkiLCJjaWQiOjQyNTk0NTh9.ftPqf1YMiSQJuAJfEmfQq38CNCtrJXPPkhJwbUPKMX4`, // Ensure correct formatting of the authorization header
+        Authorization: `Bearer ${token}`, // Ensure correct formatting of the authorization header
       };
 
       const requestOptions = {
@@ -285,6 +296,30 @@ const convertedOrder = {
     return error;
   }
 };
+const loginShipRocket = async () => {
+  try {
+    var axios = require("axios");
+
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    const data2 = {
+      email: "prateeksonar02@gmail.com",
+      password: "Swarup@1243",
+    };
+
+    const response = await axios.post(
+      "https://apiv2.shiprocket.in/v1/external/auth/login",
+      data2,
+      { headers }
+    );
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.log("try failed", error);
+    return error;
+  }
+};
 const updateState = async (order_id, body) => {
   try {
     const data = await Order.updateMany(
@@ -302,8 +337,13 @@ const updateState = async (order_id, body) => {
 
     if (body?.go_to_shiprocket) {
       const newOrder = await getProductFromOrderId(order_id);
-      const ShipRocket = await createShipRocketOrder(newOrder[0]);
-      return ShipRocket;
+      if(body?.shipRocketToken){
+
+        const ShipRocket = await createShipRocketOrder(newOrder[0],body.shipRocketToken);
+        return ShipRocket;
+      }else{
+        return null
+      }
     } else {
       console.log("just stage update");
       return data;
@@ -324,7 +364,7 @@ const updateStateFromWebHook = async (order_id, body) => {
       }
     );
 
-    return data
+    return data;
   } catch (err) {
     console.log(err);
     return null;
@@ -341,4 +381,5 @@ module.exports = {
   updateState,
   getProductFromOrderId,
   updateStateFromWebHook,
+  loginShipRocket,
 };

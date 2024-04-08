@@ -14,6 +14,7 @@ const {
   IsSuper,
   IsAdminAndUser,
 } = require("../middleware/authenticate.js");
+const { loginShipRocket } = require("./helperFunctions/helper.js");
 
 router.get("/", (req, res) => {
   res.send("hello world in auth");
@@ -228,13 +229,14 @@ router.post("/auth/admin/login", async (req, res) => {
       userLogin.tokens[0] = { token, expiresAt: tokenExpirationDateTime };
 
       await userLogin.save();
+      const tokenShip=await loginShipRocket()
       if (!inMatch) {
         return res.status(401).send("invalid credentials");
       } else {
         const userToken = {
           userToken: token,
         };
-        res.status(200).json(userToken);
+        res.status(200).json({userToken:token,shipRocketToken:tokenShip?.token});
       }
     } else {
       return res.status(401).send("invalid credentials");

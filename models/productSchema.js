@@ -27,6 +27,7 @@ const productSchema = new mongoose.Schema({
   category: { type: String, required: true },
   wheels: { type: Boolean, default: false },
   special: { type: Boolean, default: false },
+  trending: { type: Boolean, default: false },
 
   instock: { type: Boolean, default: true },
   active: { type: Boolean, default: true },

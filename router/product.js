@@ -14,7 +14,7 @@ const {
   IsAdmin,
   IsSuper,
 } = require("../middleware/authenticate.js");
-const { getProduct } = require("./helperFunctions/productHelper.js");
+const { getProduct, extractNumbers } = require("./helperFunctions/productHelper.js");
 const { a } = require("./helperFunctions/test.js");
 
 router.get("/api/product", async (req, res) => {
@@ -29,6 +29,8 @@ router.get("/api/product", async (req, res) => {
       min_discount,
       max_discount,
       other,
+      price,
+      discount,
       ...resa
     } = req.query;
     if(other){
@@ -36,6 +38,29 @@ router.get("/api/product", async (req, res) => {
     }
     if (product_name) {
       resa.product_name = { $regex: product_name };
+    }
+    if(discount){
+     const newDiscount = discount.replace(/%$/, '');
+      resa.discount = {
+        $gte: parseInt(newDiscount),
+      }
+    }
+    if(price){
+    const {min,max}=extractNumbers(price)
+    if(max===null){
+      resa.price = {
+        $gte: parseInt(min),
+      };
+    }else{
+
+      resa.price = {
+          $gte: parseInt(min),
+          $lte: parseInt(max),
+        };
+      }
+      // resa.discount = {
+      //   $gte: parseInt(newDiscount),
+      // }
     }
     if (min_price && max_price) {
       resa.product_price = {

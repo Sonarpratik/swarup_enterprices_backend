@@ -39,10 +39,10 @@ const productSchema = new mongoose.Schema({
   seoArray: [{ type: String }],
   suitableFor: { type: String },
   rating: { type: Number },
+  material: { type: String },
   
 
   chair: {
-    material: { type: String },
     cover: { type: String },
     backCushion: { type: String },
     armRest: { type: String },

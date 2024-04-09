@@ -2,6 +2,15 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 var fs = require("fs")
+const https=require('https')
+
+// const key=fs.readFileSync('private.key')
+// const cert=fs.readFileSync('certificate.crt')
+
+// const cred={
+//   key,cert
+// }
+
 
 
 
@@ -31,6 +40,16 @@ app.get('/payment', function(req, res){
 });
 
 
+
+http = require('http').Server(app),
+io = require('socket.io')(http);
+    fs = require('fs'),
+    qs = require('querystring'),
+
+app.get('/.well-known/pki-validation/B7CAE7C113F05C2DC0F594CBA3D489E8.txt',(req,res)=>{
+  res.sendFile(__dirname + `/B7CAE7C113F05C2DC0F594CBA3D489E8.txt`);
+
+})
 
 io.on('connection', function(socket){
     console.log('a user connected');
@@ -84,4 +103,8 @@ app.listen(port, () => {
   console.log(`server is running on port no ${port}`);
 });
 
+
+
+// const httpsServer=https.createServer(cred,app)
+// httpsServer.listen(443)
 

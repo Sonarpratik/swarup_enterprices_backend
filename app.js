@@ -4,12 +4,12 @@ const mongoose = require("mongoose");
 var fs = require("fs")
 const https=require('https')
 
-// const key=fs.readFileSync('private.key')
-// const cert=fs.readFileSync('certificate.crt')
+const key=fs.readFileSync('private.key')
+const cert=fs.readFileSync('certificate.crt')
 
-// const cred={
-//   key,cert
-// }
+const cred={
+  key,cert
+}
 
 
 
@@ -105,6 +105,6 @@ app.listen(port, () => {
 
 
 
-// const httpsServer=https.createServer(cred,app)
-// httpsServer.listen(443)
+const httpsServer=https.createServer(cred,app)
+httpsServer.listen(443)
 

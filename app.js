@@ -86,6 +86,7 @@ app.use(require('./router/order'))
 app.use(require('./router/shiprocket.js'))
 app.use('/aws',require('./router/aws'))
 app.use('/api',require('./router/review'))
+app.use('/api',require('./router/coupon'))
 
 // app.use(require('./router/auth'))
 // require('./router/auth')

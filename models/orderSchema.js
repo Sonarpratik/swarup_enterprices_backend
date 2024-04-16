@@ -11,7 +11,8 @@ const orderSchema = new mongoose.Schema({
   length: { type: Number },
   breadth: { type: Number },
   height: { type: Number },
-  weight: { type: Number },
+  height: { type: Number },
+  couponDiscount: { type: Number ,default:0},
 
   stage:{type:String,default:"Pending"},
 

@@ -76,6 +76,7 @@ router.get("/api/order", async (req, res) => {
           billing: item?.billing,
           shipping: item?.shipping,
           payment:item?.payment,
+          couponDiscount:item?.couponDiscount,
           stage:item?.stage,
           length:item?.length,
           breadth:item?.breadth,
@@ -131,7 +132,7 @@ router.get("/api/order/:id", IsAdminAndUser, async (req, res) => {
   try {
     const userId = req.params.id;
 
-    const order = await Order.find({ user_id: userId ,active:true});
+    const order = await Order.find({ user_id: userId ,active:true}).sort({created_at:-1});
     // Fetch products based on product IDs
     const productIds = order.map((item) => item.product_id);
 
@@ -162,6 +163,7 @@ router.get("/api/order/:id", IsAdminAndUser, async (req, res) => {
           billing: item?.billing,
           shipping: item?.shipping,
           payment:item?.payment,
+          couponDiscount:item?.couponDiscount,
           stage:item?.stage,
           length:item?.length,
           breadth:item?.breadth,

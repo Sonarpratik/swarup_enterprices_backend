@@ -56,6 +56,7 @@ router.post("/v1/payment", Authenticate, async (req, res) => {
             order_id: order.id, // Nest product details inside the cart item
             billing:billing,
             shipping:shipping,
+            couponDiscount:req.body.couponDiscount
             
           };
         });

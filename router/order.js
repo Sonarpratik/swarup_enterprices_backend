@@ -26,9 +26,10 @@ const {
   failOrder,
   successOrder,
   updateState,
+  sendMail,
 } = require("./helperFunctions/helper.js");
 
-router.get("/api/order", async (req, res) => {
+router.get("/api/order",IsAdmin, async (req, res) => {
   try {
     // const userId = req.params.id;
     const {  sort, ...resa } = req.query;
@@ -130,6 +131,7 @@ console.log(startIndex, parseInt(startIndex) + parseInt(limit))
 });
 router.get("/api/order/:id", IsAdminAndUser, async (req, res) => {
   try {
+    sendMail()
     const userId = req.params.id;
 
     const order = await Order.find({ user_id: userId ,active:true}).sort({created_at:-1});

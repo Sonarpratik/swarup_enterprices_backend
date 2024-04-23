@@ -11,7 +11,7 @@ const orderSchema = new mongoose.Schema({
   length: { type: Number },
   breadth: { type: Number },
   height: { type: Number },
-  height: { type: Number },
+  weight: { type: Number },
   couponDiscount: { type: Number ,default:0},
 
   stage:{type:String,default:"Pending"},
@@ -32,6 +32,8 @@ const orderSchema = new mongoose.Schema({
     city: { type: String },
     state: { type: String },
     landMark: { type: String },
+    email: { type: String },
+
     pincode: { type: Number },
   },
   shipping: {
@@ -41,6 +43,8 @@ const orderSchema = new mongoose.Schema({
     city: { type: String },
     state: { type: String },
     landMark: { type: String },
+    email: { type: String },
+
     pincode: { type: Number },
   },
 

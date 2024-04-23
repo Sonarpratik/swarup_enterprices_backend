@@ -2,6 +2,10 @@ const Product = require("../../models/productSchema.js");
 const Cart = require("../../models/userCartSchema.js");
 const Order = require("../../models/orderSchema.js");
 const Razorpay = require("razorpay");
+const dotenv = require("dotenv");
+const nodemailer = require("nodemailer");
+const Mailgen = require("mailgen");
+dotenv.config();
 
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
 const razorpayInstance = new Razorpay({
@@ -86,6 +90,120 @@ const failOrder = async (order_id) => {
     );
     return newOrder;
   } catch (err) {
+    return null;
+  }
+};
+const sendMail = async () => {
+  const order_id = "order_O1aiwU0Rbac7tw";
+  try {
+    const orders = await Order.find({ order_id: order_id });
+    const productIds = orders.map((item) => item.product_id);
+
+    // Fetch products based on product IDs
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    const cartWithProductDetails = orders.map((cartItem) => {
+      // Find the corresponding product details for the current cart item
+      const productDetail = products.find(
+        (product) => product._id.toString() === cartItem.product_id.toString()
+      );
+      return {
+        ...cartItem.toObject(), // Convert Mongoose document to plain JavaScript object
+        product: productDetail, // Nest product details inside the cart item
+      };
+    });
+    console.log(cartWithProductDetails);
+    const transporter = await nodemailer.createTransport({
+      host: "smtp.gmail.com", // Corrected host
+      port: 587, // Uncommented port
+      secure: false, // TLS is required for port 587
+      auth: {
+        user: "xprateek.2002@gmail.com",
+        pass: "fhhnvkpglgdamkyd",
+      },
+    });
+
+    const MailGenerator = new Mailgen({
+      theme: "default",
+      product: {
+        name: "Mailgen",
+        link: "https://mailgen.js/",
+      },
+    });
+    const emailBody = `Hello, ${cartWithProductDetails[0].billing.name}!
+
+    ${cartWithProductDetails.map(item => `
+      Your order details:
+      Product Name: ${item.product.name}
+      Color: ${item.color}
+      Category: ${item.product.category}
+      Price: ${item.price}
+      Discount: ${item.discount}
+      Coupon Discount: ${item.couponDiscount}
+      
+      Thank you for shopping with us!
+    `).join('')}`;
+    
+    const response = {
+      body: {
+        intro: "Your Email Has Arrived",
+        table: {
+          data: cartWithProductDetails.map(item => ({
+            Product: item.product.name,
+            Color: item.color,
+            Category: item.product.category,
+            Price: item.price,
+            Discount: item.discount,
+            Coupon: item.couponDiscount
+          })),
+        },
+        outro: "Looking Forward",
+      },
+    };
+    // Send email using nodemailer'
+    
+    const mail = MailGenerator.generate(response);
+
+    const mailOptions = {
+      from: "xprateek.2002@gmail.com",
+      to: "prateeksonar02@gmail.com", // Assuming you have the email associated with the order
+      subject: "Your Order Details",
+      html: mail,
+    };
+    const mailOptions2 = {
+      from: "xprateek.2002@gmail.com",
+      to: cartWithProductDetails[0]?.billing?.email, // Assuming you have the email associated with the order
+      subject: "Your Order Details",
+      html: mail,
+    };
+    // const mail = MailGenerator.generate(response);
+    // const message = {
+    //   from: "xprateek.2002@gmail.com",
+    //   to: "prateeksonar02@gmail.com",
+    //   subject: "Place Order",
+    //   html: mail,
+    // };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+        console.log( cartWithProductDetails[0].billing.email)
+      } else {
+        console.log("Email sent: " + info);
+        console.log("Email sent: " + info.response);
+      }
+    });
+    transporter.sendMail(mailOptions2, function (error, info) {
+      if (error) {
+        console.log(error);
+        console.log( cartWithProductDetails[0].billing.email)
+      } else {
+        console.log("Email sent2: " + info);
+        console.log("Email sent2: " + info.response);
+      }
+    });
+  } catch (error) {
+    console.log(error);
     return null;
   }
 };
@@ -183,8 +301,8 @@ const getProductFromOrderId = async (order_id) => {
 };
 
 // const token =
-  // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQ1MDM2NzYsInNvdXJjZSI6InNyLWF1dGgtaW50IiwiZXhwIjoxNzEzNDYyNDIwLCJqdGkiOiJkc0VCa2tsQ1Z6OXJXVWU1IiwiaWF0IjoxNzEyNTk4NDIwLCJpc3MiOiJodHRwczovL3NyLWF1dGguc2hpcHJvY2tldC5pbi9hdXRob3JpemUvdXNlciIsIm5iZiI6MTcxMjU5ODQyMCwiY2lkIjo0MjU5NDU4LCJ0YyI6MzYwLCJ2ZXJib3NlIjpmYWxzZSwidmVuZG9yX2lkIjowLCJ2ZW5kb3JfY29kZSI6IiJ9.WNIBZef1npVB1p-FZ_QGXN_uhYnvo20g1xOMq1GgKV4";
-const createShipRocketOrder = async (our_order,token) => {
+// "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQ1MDM2NzYsInNvdXJjZSI6InNyLWF1dGgtaW50IiwiZXhwIjoxNzEzNDYyNDIwLCJqdGkiOiJkc0VCa2tsQ1Z6OXJXVWU1IiwiaWF0IjoxNzEyNTk4NDIwLCJpc3MiOiJodHRwczovL3NyLWF1dGguc2hpcHJvY2tldC5pbi9hdXRob3JpemUvdXNlciIsIm5iZiI6MTcxMjU5ODQyMCwiY2lkIjo0MjU5NDU4LCJ0YyI6MzYwLCJ2ZXJib3NlIjpmYWxzZSwidmVuZG9yX2lkIjowLCJ2ZW5kb3JfY29kZSI6IiJ9.WNIBZef1npVB1p-FZ_QGXN_uhYnvo20g1xOMq1GgKV4";
+const createShipRocketOrder = async (our_order, token) => {
   try {
     var axios = require("axios");
 
@@ -337,12 +455,14 @@ const updateState = async (order_id, body) => {
 
     if (body?.go_to_shiprocket) {
       const newOrder = await getProductFromOrderId(order_id);
-      if(body?.shipRocketToken){
-
-        const ShipRocket = await createShipRocketOrder(newOrder[0],body.shipRocketToken);
+      if (body?.shipRocketToken) {
+        const ShipRocket = await createShipRocketOrder(
+          newOrder[0],
+          body.shipRocketToken
+        );
         return ShipRocket;
-      }else{
-        return null
+      } else {
+        return null;
       }
     } else {
       console.log("just stage update");
@@ -382,4 +502,5 @@ module.exports = {
   getProductFromOrderId,
   updateStateFromWebHook,
   loginShipRocket,
+  sendMail,
 };

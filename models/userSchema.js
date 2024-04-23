@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
-  phone: { type: String},
+  phone: { type: String },
 
   billing: {
     name: { type: String },
@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
     city: { type: String },
     state: { type: String },
     landMark: { type: String },
+    email: { type: String },
     pincode: { type: Number },
   },
   shipping: {
@@ -23,9 +24,10 @@ const userSchema = new mongoose.Schema({
     city: { type: String },
     state: { type: String },
     landMark: { type: String },
+    email: { type: String },
+
     pincode: { type: Number },
   },
-  
 
   password: { type: String },
   active: { type: Boolean, default: true },

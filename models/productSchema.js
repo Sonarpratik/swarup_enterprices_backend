@@ -38,6 +38,7 @@ const productSchema = new mongoose.Schema({
   multi_img: [{ type: String }],
   seoArray: [{ type: String }],
   suitableFor: { type: String },
+  display: { type: String },
   rating: { type: Number },
   material: { type: String },
   

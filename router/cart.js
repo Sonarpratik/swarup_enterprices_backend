@@ -82,10 +82,23 @@ router.post("/api/cart", Authenticate, async (req, res) => {
     const { _id } = req.rootUser;
     const checkCart = await Cart.findOne({
       user_id: _id,
+      product_id:req.body.product_id,
       color: req.body.color,
     });
     if (checkCart) {
-      res.status(200).send(checkCart);
+      console.log("here")
+
+      const structure = {
+        // user_id: _id,
+        // product_id: req.body.product_id,
+        quantity:checkCart?.quantity+ req.body.quantity,
+        // color: req.body.color,
+      };
+      const did = await Cart.findByIdAndUpdate({ _id: checkCart?._id }, structure, {
+        new: true,
+      });
+  console.log(structure)
+      res.status(200).send(did);
     } else {
       const structure = {
         user_id: _id,
@@ -99,6 +112,7 @@ router.post("/api/cart", Authenticate, async (req, res) => {
       res.status(201).send(cart);
     }
   } catch (err) {
+    console.log(err)
     res.status(404).send({ message: "Something Went Wrong" });
   }
 });

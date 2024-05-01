@@ -305,7 +305,7 @@ const getProductFromOrderId = async (order_id) => {
 const createShipRocketOrder = async (our_order, token) => {
   try {
     var axios = require("axios");
-
+console.log("our_order",our_order)
     if (our_order?.order_id) {
       const isSameAddress =
         our_order?.billing?.name === our_order?.shipping?.name &&
@@ -445,6 +445,7 @@ const updateState = async (order_id, body) => {
       {
         $set: {
           stage: body.stage,
+          payment: body.payment,
           length: body.length,
           breadth: body.breadth,
           height: body.height,

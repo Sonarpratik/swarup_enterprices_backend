@@ -13,9 +13,14 @@ const {
   Authenticate,
   IsAdmin,
   IsSuper,
+  GetUser,
 } = require("../middleware/authenticate.js");
-const { getProduct, extractNumbers } = require("./helperFunctions/productHelper.js");
+const {
+  getProduct,
+  extractNumbers,
+} = require("./helperFunctions/productHelper.js");
 const { a } = require("./helperFunctions/test.js");
+const Suggestion = require("../models/suggestionSchema.js");
 
 router.get("/api/product", async (req, res) => {
   try {
@@ -33,27 +38,25 @@ router.get("/api/product", async (req, res) => {
       discount,
       ...resa
     } = req.query;
-    if(other){
-      console.log("lion",other)
+    if (other) {
     }
     if (product_name) {
       resa.product_name = { $regex: product_name };
     }
-    if(discount){
-     const newDiscount = discount.replace(/%$/, '');
+    if (discount) {
+      const newDiscount = discount.replace(/%$/, "");
       resa.discount = {
         $gte: parseInt(newDiscount),
-      }
-    }
-    if(price){
-    const {min,max}=extractNumbers(price)
-    if(max===null){
-      resa.price = {
-        $gte: parseInt(min),
       };
-    }else{
-
-      resa.price = {
+    }
+    if (price) {
+      const { min, max } = extractNumbers(price);
+      if (max === null) {
+        resa.price = {
+          $gte: parseInt(min),
+        };
+      } else {
+        resa.price = {
           $gte: parseInt(min),
           $lte: parseInt(max),
         };
@@ -118,8 +121,7 @@ router.get("/api/product/trending", async (req, res) => {
       other,
       ...resa
     } = req.query;
-    if(other){
-      console.log("lion",other)
+    if (other) {
     }
     if (product_name) {
       resa.product_name = { $regex: product_name };
@@ -149,8 +151,6 @@ router.get("/api/product/trending", async (req, res) => {
     // Response object to include pagination info
 
     // const data = await User.find();
-
-
 
     res.status(200).send(data);
   } catch (e) {
@@ -189,14 +189,41 @@ router.get("/api/admin-product", async (req, res) => {
     res.status(404).send(e);
   }
 });
-router.get("/api/product/:id", async (req, res) => {
+router.get("/api/product/:id", GetUser, async (req, res) => {
   try {
     const userId = req.params.id;
 
     const data = await Product.findById(userId);
     const products = await Product.find({ name: data.name });
     const result = getProduct(data, products);
+    if (req?.rootUser) {
+      console.log("id found", req?.rootUser?._id?.toString());
+      const suggestionProducts = await Suggestion.find({
+        user_id: req?.rootUser?._id?.toString(),
+        product_id: data?._id,
+      });
+      if (suggestionProducts.length > 0) {
+        console.log("suggestionProducts", suggestionProducts);
+      } else {
+        const structure = {
+          user_id: req?.rootUser?._id?.toString(),
+          category: data?.category,
+          product_id: data?._id,
+        };
+        const userSuggestions = await Suggestion.find({
+          user_id: req?.rootUser?._id?.toString(),
+        });
+        console.log("userSuggestions", userSuggestions);
+        if (userSuggestions.length >= 6) {
+          await Suggestion.findByIdAndDelete(userSuggestions[0]?._id);
+        }
+        const suggestion = new Suggestion(structure);
 
+        await suggestion.save();
+      }
+    } else {
+      console.log("id not found");
+    }
     res.status(200).send(result);
   } catch (e) {
     console.log(e);
@@ -226,15 +253,27 @@ router.get("/api/related-product/:name", async (req, res) => {
     const newData = data.filter(
       (item) => item._id.toString() !== originalProduct._id.toString()
     );
-    console.log(newData);
-    console.log(originalProduct._id);
     res.status(200).send(newData);
   } catch (e) {
     console.log(e);
     res.status(404).send(e);
   }
 });
-router.delete("/api/product/:id", async (req, res) => {
+router.get("/api/suggestions-product",GetUser, async (req, res) => {
+  try {
+    if (req?.rootUser) {
+const data=await Suggestion.find({user_id:req?.rootUser?._id?.toString()})
+res.status(200).send(data);
+    }else{
+  const data = await Product.find({trending:true});
+  res.status(200).send(data);
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(404).send(e);
+  }
+});
+router.delete("/api/product/:id", IsAdmin, async (req, res) => {
   try {
     const userId = req.params.id;
 
@@ -246,7 +285,7 @@ router.delete("/api/product/:id", async (req, res) => {
     res.status(404).send(e);
   }
 });
-router.patch("/api/product/:id", async (req, res) => {
+router.patch("/api/product/:id", IsAdmin, async (req, res) => {
   try {
     const userId = req.params.id;
     const { _id, ...data } = req.body;

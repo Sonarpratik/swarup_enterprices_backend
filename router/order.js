@@ -131,7 +131,7 @@ console.log(startIndex, parseInt(startIndex) + parseInt(limit))
 });
 router.get("/api/order/:id", IsAdminAndUser, async (req, res) => {
   try {
-    sendMail()
+    // sendMail()
     const userId = req.params.id;
 
     const order = await Order.find({ user_id: userId ,active:true}).sort({created_at:-1});

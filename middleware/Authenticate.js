@@ -78,6 +78,34 @@ const Authenticate = async (req, res, next) => {
       res.status(401).json({message:"UnAuthoriseds"});
   }
 };
+const GetUser = async (req, res, next) => {
+  try {
+    const { verfiyToken, token } = VerifyToken(req, res);
+
+    const rootUser = await User.findOne({
+      _id: verfiyToken.userId,
+      "tokens.token": token,
+    });
+
+    if (!rootUser) {
+     next()
+    }else{
+
+      
+      req.token = token;
+      req.rootUser = rootUser;
+      req.userID = rootUser._id;
+ 
+        next();
+
+     
+    }
+    } catch (err) {
+      console.log(err)
+      next()
+      // res.status(401).json({message:"UnAuthoriseds"});
+  }
+};
 
 //Is Super Admin
 const IsSuper = async (req, res, next) => {
@@ -188,5 +216,6 @@ module.exports = {
   Authenticate,
   IsAdmin,
   IsSuper,
-  IsAdminAndUser
+  IsAdminAndUser,
+  GetUser
 };

@@ -18,6 +18,7 @@ const {
 const {
   getProduct,
   extractNumbers,
+  mostUsedCategory,
 } = require("./helperFunctions/productHelper.js");
 const { a } = require("./helperFunctions/test.js");
 const Suggestion = require("../models/suggestionSchema.js");
@@ -262,10 +263,27 @@ router.get("/api/related-product/:name", async (req, res) => {
 router.get("/api/suggestions-product",GetUser, async (req, res) => {
   try {
     if (req?.rootUser) {
-const data=await Suggestion.find({user_id:req?.rootUser?._id?.toString()})
-res.status(200).send(data);
+      const data=await Suggestion.find({user_id:req?.rootUser?._id?.toString()})
+      if(data?.length>0){
+        const category=mostUsedCategory(data)
+
+        const products = await Product.find({category:category,active:true});
+        // console.log(category)
+        // console.log(products)
+        // const filteredProducts=products?.filter((item)=>item?._id!==data?.)
+        const idsToExclude=data?.map((item)=>item.product_id)
+        console.log(idsToExclude)
+        const filteredData = products?.filter(item => !idsToExclude.includes(item?._id?.toString()));
+        console.log("filteredData",filteredData)
+        res.status(200).send(filteredData);
+
+      }else{
+        
+        const data = await Product.find({trending:true});
+        res.status(200).send(data);
+}
     }else{
-  const data = await Product.find({trending:true});
+  const data = await Product.find({trending:true,active:true});
   res.status(200).send(data);
     }
   } catch (e) {

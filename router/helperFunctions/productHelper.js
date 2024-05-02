@@ -44,9 +44,28 @@ const extractNumbers = (range) => {
 
   return { min, max };
 };
+const mostUsedCategory = (data) => {
+  const categoryCounts = data?.reduce((acc, item) => {
+    acc[item.category] = (acc[item.category] || 0) + 1;
+    return acc;
+}, {});
+
+// Get the most used category
+let mostUsedCategory;
+let maxCount = 0;
+for (const category in categoryCounts) {
+    if (categoryCounts[category] > maxCount) {
+        mostUsedCategory = category;
+        maxCount = categoryCounts[category];
+    }
+}
+
+return mostUsedCategory
+};
 
 
 module.exports = {
   extractNumbers,
     getProduct,
+    mostUsedCategory,
 };

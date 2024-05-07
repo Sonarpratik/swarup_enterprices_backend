@@ -42,7 +42,11 @@ router.get("/api/product", async (req, res) => {
     if (other) {
     }
     if (product_name) {
-      resa.product_name = { $regex: product_name };
+      const regexPattern = new RegExp(product_name, 'i'); // Case-insensitive regex
+      resa.name = { $regex: regexPattern };
+      // resa.category = { $regex: regexPattern };
+      // resa.name = { $regex: product_name };
+      // resa.category = { $regex: product_name };
     }
     if (discount) {
       const newDiscount = discount.replace(/%$/, "");
@@ -161,14 +165,26 @@ router.get("/api/product/trending", async (req, res) => {
 });
 router.get("/api/admin-product", async (req, res) => {
   try {
+    const {
+      product_name,
+
+      ...resa
+    } = req.query;
+    if (product_name) {
+      const regexPattern = new RegExp(product_name, 'i'); // Case-insensitive regex
+      resa.name = { $regex: regexPattern };
+      // resa.category = { $regex: regexPattern };
+      // resa.name = { $regex: product_name };
+      // resa.category = { $regex: product_name };
+    }
     const page = req.query.page;
     const limit = req.query.limit;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const totalCount = await Product.countDocuments();
+    const totalCount = await Product.countDocuments(resa);
 
     // Fetch data with pagination using skip() and limit()
-    const data = await Product.find().skip(startIndex).limit(limit);
+    const data = await Product.find(resa).skip(startIndex).limit(limit);
 
     // Calculate total pages for pagination
     const totalPages = Math.ceil(totalCount / limit);
@@ -260,31 +276,36 @@ router.get("/api/related-product/:name", async (req, res) => {
     res.status(404).send(e);
   }
 });
-router.get("/api/suggestions-product",GetUser, async (req, res) => {
+router.get("/api/suggestions-product", GetUser, async (req, res) => {
   try {
     if (req?.rootUser) {
-      const data=await Suggestion.find({user_id:req?.rootUser?._id?.toString()})
-      if(data?.length>0){
-        const category=mostUsedCategory(data)
+      const data = await Suggestion.find({
+        user_id: req?.rootUser?._id?.toString(),
+      });
+      if (data?.length > 0) {
+        const category = mostUsedCategory(data);
 
-        const products = await Product.find({category:category,active:true});
+        const products = await Product.find({
+          category: category,
+          active: true,
+        });
         // console.log(category)
         // console.log(products)
         // const filteredProducts=products?.filter((item)=>item?._id!==data?.)
-        const idsToExclude=data?.map((item)=>item.product_id)
-        console.log(idsToExclude)
-        const filteredData = products?.filter(item => !idsToExclude.includes(item?._id?.toString()));
-        console.log("filteredData",filteredData)
+        const idsToExclude = data?.map((item) => item.product_id);
+        console.log(idsToExclude);
+        const filteredData = products?.filter(
+          (item) => !idsToExclude.includes(item?._id?.toString())
+        );
+        console.log("filteredData", filteredData);
         res.status(200).send(filteredData);
-
-      }else{
-        
-        const data = await Product.find({trending:true});
+      } else {
+        const data = await Product.find({ trending: true });
         res.status(200).send(data);
-}
-    }else{
-  const data = await Product.find({trending:true,active:true});
-  res.status(200).send(data);
+      }
+    } else {
+      const data = await Product.find({ trending: true, active: true });
+      res.status(200).send(data);
     }
   } catch (e) {
     console.log(e);

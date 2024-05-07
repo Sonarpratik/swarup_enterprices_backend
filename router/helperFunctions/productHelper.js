@@ -7,12 +7,15 @@ const getProduct =  (data, products) => {
         _id: item._id,
         color: item.color
       }));
-      
-      
+      const withOutMain_id=groupedByColor?.filter((item)=>item.color!==data?.color)
+      const uniqueColors = withOutMain_id?.filter((value, index, self) => 
+        index === self.findIndex(item => item.color === value.color)
+    );
+    uniqueColors.push({ _id: data?._id, color: data?.color }); 
       // Transforming main object's color property into an array of objects
       const result = {
         ...data._doc,
-        color:groupedByColor
+        color:uniqueColors
       };
       
     return result;

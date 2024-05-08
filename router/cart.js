@@ -57,9 +57,8 @@ const _id =req.body._id
 });
 router.patch("/api/cart/:id", IsAdminAndUser, async (req, res) => {
     try {
-        const cartId = req.params.id;
         const { _id, quantity,...data } = req.body;
-        const did = await Cart.findByIdAndUpdate({ _id: cartId }, {quantity:quantity}, {
+        const did = await Cart.findByIdAndUpdate({ _id: _id }, {quantity:quantity}, {
           new: true,
         });
     

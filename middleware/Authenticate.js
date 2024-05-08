@@ -169,7 +169,8 @@ const IsAdminAndUser = async (req, res, next) => {
       if (userId === getid) {
         next();
       } else {
-        
+        console.log(userId)
+        console.log(getid)
         res.status(401).json({message:"Unauthorized"});
       }
     }

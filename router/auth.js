@@ -271,7 +271,7 @@ router.get("/auth/verify", Authenticate, (req, res) => {
 });
 
 //Only ADMIN AND STAFF
-router.get("/auth/verify/admin", IsSuper, (req, res) => {
+router.get("/auth/verify/admin", IsAdmin, (req, res) => {
   const {
     _id,
     name,
@@ -408,49 +408,7 @@ router.delete("/auth/staff/:id", IsSuper, async (req, res) => {
   }
 });
 
-//update staff by admin
-router.patch("/auth/staff/:id", IsSuper, async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const { password, tokens, _id, ...data } = req.body;
-    console.log(req.body);
-    const did = await Admin.findByIdAndUpdate({ _id: userId }, data, {
-      new: true,
-    });
 
-    const {
-      name,
-      email,
-      phone,
-      role,
-      product_create,
-      product_edit,
-      product_delete,
-      product_view,
-      user_view,
-      user_edit,
-      user_delete,
-      ...p
-    } = did;
-    res.status(200).send({
-      _id,
-      name,
-      email,
-      phone,
-      role,
-      product_create,
-      product_edit,
-      product_delete,
-      product_view,
-      user_view,
-      user_edit,
-      user_delete,
-    });
-  } catch (e) {
-    console.log(e);
-    res.status(404).send("You Dont Hvae the clearnce");
-  }
-});
 //get all user
 router.get("/auth/user", async (req, res) => {
   try {
@@ -503,5 +461,23 @@ router.get("/auth/user", async (req, res) => {
     res.status(404).send(e);
   }
 });
+router.patch("/auth/staff/:id", IsSuper, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { password, tokens, _id, ...data } = req.body;
+    console.log(req.body);
+    if (password) {
+      data.password = await bcrypt.hash(password, 12);
+    }
 
+    const did = await Admin.findByIdAndUpdate({ _id: userId }, data, {
+      new: true,
+    });
+
+    res.status(200).send(did);
+  } catch (e) {
+    console.log(e);
+    res.status(404).send("You Dont Hvae the clearnce");
+  }
+});
 module.exports = router;

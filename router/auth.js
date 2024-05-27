@@ -14,7 +14,7 @@ const {
   IsSuper,
   IsAdminAndUser,
 } = require("../middleware/authenticate.js");
-const { loginShipRocket } = require("./helperFunctions/helper.js");
+const { loginShipRocket, SendMailFunction } = require("./helperFunctions/helper.js");
 
 router.get("/", (req, res) => {
   res.send("hello world in auth");
@@ -298,23 +298,7 @@ router.get("/auth/verify/admin", IsAdmin, (req, res) => {
   });
 });
 
-//Only Admin Can Update
-router.patch("/auth/user/:id", IsAdminAndUser, async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const { _id, ...data } = req.body;
-    console.log(req.body);
-    const did = await User.findByIdAndUpdate({ _id: userId }, data, {
-      new: true,
-    });
-
-    const { password, token, active, ...extra } = did._doc;
-    res.status(200).send(extra);
-  } catch (e) {
-    console.log(e);
-    res.status(404).send("You Dont Hvae the clearnce");
-  }
-});
+//Only Admin And User Can Update
 
 router.get("/isadmin", Authenticate, (req, res) => {
   const { name, email, phone, role, ...data } = req.rootUser;
@@ -478,6 +462,42 @@ router.patch("/auth/staff/:id", IsSuper, async (req, res) => {
   } catch (e) {
     console.log(e);
     res.status(404).send("You Dont Hvae the clearnce");
+  }
+});
+
+router.patch("/auth/user/:id", IsAdminAndUser, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { password, tokens, _id, ...data } = req.body;
+    console.log(req.body);
+    if (password) {
+      data.password = await bcrypt.hash(password, 12);
+    }
+
+    const did = await User.findByIdAndUpdate({ _id: userId }, data, {
+      new: true,
+    });
+
+    res.status(200).send(did);
+  } catch (e) {
+    console.log(e);
+    res.status(404).send("You Dont Hvae the clearnce");
+  }
+});
+
+router.post("/auth/forgot", async (req, res) => {
+  try {
+
+    const userLogin = await User.findOne({ email: req.body.email });
+    if(userLogin){
+
+      const del = await SendMailFunction(req.body.email,userLogin,res)
+      console.log(del)
+    }
+    res.status(200).send("done");
+  } catch (err) {
+    console.log(err)
+    res.status(401).send(err);
   }
 });
 module.exports = router;

@@ -3,6 +3,8 @@ const Cart = require("../../models/userCartSchema.js");
 const Order = require("../../models/orderSchema.js");
 const Razorpay = require("razorpay");
 const dotenv = require("dotenv");
+const jwt = require("jsonwebtoken");
+
 const nodemailer = require("nodemailer");
 const Mailgen = require("mailgen");
 dotenv.config();
@@ -492,6 +494,79 @@ const updateStateFromWebHook = async (order_id, body) => {
   }
 };
 
+const tokenCreation=async (userLogin,res)=>{
+  const tokenExpiration = 1000 * 60 ; // 10 minutes in seconds
+  token = jwt.sign({ userId: userLogin._id }, "your_secret_key", {
+    expiresIn: tokenExpiration,
+  });
+  
+  res.cookie("jwtoken", token, {
+    expires: new Date(Date.now() + tokenExpiration*1000), // Set cookie expiration
+    httpOnly: true,
+    secure: true,
+  });
+  
+  const tokenExpirationDateTime = new Date(Date.now() + tokenExpiration*1000);
+  console.log(tokenExpirationDateTime)
+  userLogin.tokens[0]=({ token, expiresAt: tokenExpirationDateTime });
+  await userLogin.save();
+  return token
+}
+
+const SendMailFunction=async (sendto,userLogin,res)=>{
+  const token=await tokenCreation(userLogin,res)
+  console.log(token)
+  const transporter = await nodemailer.createTransport({
+    host: "smtp.gmail.com", // Corrected host
+    port: 587, // Uncommented port
+    secure: false, // TLS is required for port 587
+    auth: {
+      user: "xprateek.2002@gmail.com",
+      pass: "fhhnvkpglgdamkyd",
+    },
+  });
+
+  const MailGenerator = new Mailgen({
+    theme: "default",
+    product: {
+      name: "Mailgen",
+      link: "https://mailgen.js/",
+    },
+  });
+  const link = `http://localhost:3000/forgetpass/?token=${token}&user_id=${userLogin?._id}`;
+  console.log(link)
+  const htmlContent = `
+    <div>
+      <p>Forgot Pass</p>
+      <p>
+        <a href="${link}" style="text-decoration: none; color: blue;">
+          <button style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+            Click here
+          </button>
+        </a>
+      </p>
+      <p>Looking Forward</p>
+    </div>
+  `;
+  // const mail = MailGenerator.generate(response);
+  const message = {
+    from: "xprateek.2002@gmail.com",
+    to: sendto,
+    subject: "Place Order",
+    html: htmlContent,
+  };
+
+  transporter.sendMail(message, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent2: " + info);
+      console.log("Email sent2: " + info.response);
+      console.log("Email sent2: " + sendto);
+    }
+  });
+}
+
 module.exports = {
   getCart,
   createOrder,
@@ -504,4 +579,6 @@ module.exports = {
   updateStateFromWebHook,
   loginShipRocket,
   sendMail,
+  SendMailFunction,
+  
 };

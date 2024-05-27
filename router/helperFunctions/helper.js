@@ -533,7 +533,7 @@ const SendMailFunction=async (sendto,userLogin,res)=>{
       link: "https://mailgen.js/",
     },
   });
-  const link = `http://localhost:3000/forgetpass/?token=${token}&user_id=${userLogin?._id}`;
+  const link = `https://www.swarupenterprises.in/forgetpass/?token=${token}&user_id=${userLogin?._id}`;
   console.log(link)
   const htmlContent = `
     <div>

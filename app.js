@@ -42,14 +42,14 @@ app.get('/payment', function(req, res){
 
 
 http = require('http').Server(app),
-io = require('socket.io')(http);
-    fs = require('fs'),
-    qs = require('querystring'),
+// io = require('socket.io')(http);
+//     fs = require('fs'),
+//     qs = require('querystring'),
 
-app.get('/.well-known/pki-validation/B7CAE7C113F05C2DC0F594CBA3D489E8.txt',(req,res)=>{
-  res.sendFile(__dirname + `/B7CAE7C113F05C2DC0F594CBA3D489E8.txt`);
+// app.get('/.well-known/pki-validation/B7CAE7C113F05C2DC0F594CBA3D489E8.txt',(req,res)=>{
+//   res.sendFile(__dirname + `/B7CAE7C113F05C2DC0F594CBA3D489E8.txt`);
 
-})
+// })
 
 io.on('connection', function(socket){
     console.log('a user connected');
@@ -106,6 +106,6 @@ app.listen(port, () => {
 
 
 
-const httpsServer=https.createServer(cred,app)
-httpsServer.listen(443)
+// const httpsServer=https.createServer(cred,app)
+// httpsServer.listen(443)
 

@@ -1,12 +1,11 @@
 {
   "name": "userbackend",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "dev":"nodemon app"
+    "dev": "nodemon app"
   },
   "keywords": [],
   "author": "",
@@ -43,5 +42,7 @@
     "passport-oauth2": "^1.7.0",
     "razorpay": "^2.9.2",
     "socket.io": "^4.7.2"
-  }
+  },
+  "devDependencies": {},
+  "description": ""
 }

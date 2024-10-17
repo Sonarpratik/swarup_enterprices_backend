@@ -76,6 +76,9 @@ require('./db/conn')
 //to understand json file
 app.use(express.json());
 
+const contactRoutes = require("./router/contact.js");
+app.use(contactRoutes);
+
 //We connect to the router to free the space in app js
 // var requestRoute=require('./router/auth')
 app.use(require('./router/auth'))

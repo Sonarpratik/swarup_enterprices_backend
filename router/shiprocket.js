@@ -31,8 +31,8 @@ router.post("/api/v1/delivery-notifications", async (req, res) => {
   
 router.post("/api/notification-webhook", async (req, res) => {
   try {
-    console.log(req.body?.payload?.payment)
-    console.log(req.body?.payload?.order)
+    console.log("req.body?.payload?.payment",req.body?.payload?.payment)
+    console.log("req.body?.payload?.order",req.body?.payload?.order)
     res.status(200).json(req.body);
   } catch (err) {
     console.log(err);
@@ -42,8 +42,8 @@ router.post("/api/notification-webhook", async (req, res) => {
 });
 router.get("/api/notification-webhook", async (req, res) => {
   try {
-console.log(req.body?.payload?.payment)
-console.log(req.body?.payload?.order)
+    console.log("req.body?.payload?.payment",req.body?.payload?.payment)
+    console.log("req.body?.payload?.order",req.body?.payload?.order)
     res.status(200).json("done");
     // res.status(200).json(req.body?.payload?.payment);
   } catch (err) {

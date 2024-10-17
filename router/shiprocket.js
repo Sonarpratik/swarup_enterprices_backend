@@ -29,10 +29,20 @@ router.post("/api/v1/delivery-notifications", async (req, res) => {
     }
   });
   
+router.post("/api/notification-webhook", async (req, res) => {
+  try {
+console.log(req.body)
+    res.status(200).json(req.body);
+  } catch (err) {
+    console.log(err);
+    res.status(401).json(err);
+
+  }
+});
 router.get("/api/notification-webhook", async (req, res) => {
   try {
-console.log(req)
-    res.status(200).json("done");
+console.log(req.body)
+    res.status(200).json(req.body);
   } catch (err) {
     console.log(err);
     res.status(401).json(err);

@@ -34,7 +34,7 @@ router.post("/api/notification-webhook", async (req, res) => {
     console.log("req.body?.payload?.payment",req)
     console.log("req.body?.payload?.payment",req?.body)
 
-    res.status(200).json("done");
+    res.status(200).json(req);
   } catch (err) {
     console.log(err);
     res.status(401).json(err);

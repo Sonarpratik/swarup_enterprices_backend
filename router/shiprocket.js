@@ -31,7 +31,7 @@ router.post("/api/v1/delivery-notifications", async (req, res) => {
   
 router.post("/api/notification-webhook", async (req, res) => {
   try {
-    console.log("req.body?.payload?.payment",req)
+    // console.log("req.body?.payload?.payment",req)
     console.log("req.body?.payload?.payment",req?.body)
     console.log("req.body?.payload?.payment",req?.Fields)
 

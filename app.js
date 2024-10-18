@@ -13,7 +13,8 @@ const cred={
 
 
 
-
+app.use(express.urlencoded({ extended: true })); 
+app.use(express.json());  
 
 const port = process.env.PORT || 8000;
 const dotenv = require("dotenv");

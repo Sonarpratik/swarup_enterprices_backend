@@ -43,6 +43,5 @@
     "razorpay": "^2.9.2",
     "socket.io": "^4.7.2"
   },
-  "devDependencies": {},
   "description": ""
 }

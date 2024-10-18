@@ -13,6 +13,8 @@ const {
   IsAdmin_Product_Update,
   IsAdmin_Product_Delete,
 } = require("../middleware/authenticate.js");
+const multer = require('multer');
+const upload = multer();
 const Review = require("../models/reviewSchema");
 const { updateStateFromWebHook } = require("./helperFunctions/helper.js");
 
@@ -29,15 +31,11 @@ router.post("/api/v1/delivery-notifications", async (req, res) => {
     }
   });
   
-router.post("/api/notification-webhook", async (req, res) => {
+router.post("/api/notification-webhook",upload.none(), async (req, res) => {
   try {
     // console.log("req.body?.payload?.payment",req)
     console.log("req.body?.payload?.payment",req?.body)
-    const fullName = req?.body['name'];
-    const fullName2 = req['Fields'];
-    console.log("name",fullName)
-    console.log("name",fullName2)
-    console.log("req.body?.payload?.payment",req?.Fields)
+  
 
     res.status(200).json(req?.body);
   } catch (err) {

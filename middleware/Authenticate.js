@@ -78,6 +78,8 @@ const Authenticate = async (req, res, next) => {
       res.status(401).json({message:"UnAuthoriseds"});
   }
 };
+
+
 const GetUser = async (req, res, next) => {
   try {
     const { verfiyToken, token } = VerifyToken(req, res);
